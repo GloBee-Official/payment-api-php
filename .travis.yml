@@ -18,4 +18,4 @@ matrix:
 install:
   - travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest
 
-script: phpunit
+script: phpunit --coverage-text
