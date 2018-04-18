@@ -1,4 +1,8 @@
 # GloBee Payment API
+[![Build Status](https://travis-ci.org/GloBee-Official/payment-api-php.svg?branch=master)](https://travis-ci.org/GloBee-Official/payment-api-php)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/?branch=master)
+
 This is a library to integrate your system with the GloBee Payment API
 to manage and accept crypto payments on through our system.
 
