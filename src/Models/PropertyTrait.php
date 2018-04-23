@@ -8,17 +8,17 @@ trait PropertyTrait
      * @param $key
      * @param $value
      */
-    protected function setProperty($key, $value)
+    protected function setProperty($name, $value)
     {
-        $key = $this->strToStudlyCase($key);
-        if ($value !== null && method_exists($this, 'set'.$key)) {
-            $this->{'set'.$key}($value);
+        $methodName = 'set'.$this->strToStudlyCase($name);
+        if (method_exists($this, $methodName)) {
+            $this->{$methodName}($value);
 
             return;
         }
-        $key[0] = strtolower($key[0]);
-        if (property_exists($this, $key)) {
-            $this->{$key} = $value;
+
+        if (property_exists($this, $name)) {
+            $this->{$name} = $value;
 
             return;
         }
@@ -50,18 +50,7 @@ trait PropertyTrait
 
     public function __set($name, $value)
     {
-        $methodName = 'set'.$this->strToStudlyCase($name);
-        if (method_exists($this, $methodName)) {
-            $this->{$methodName}($value);
-
-            return;
-        }
-
-        if (property_exists($this, $name)) {
-            $this->{$name} = $value;
-
-            return;
-        }
+        $this->setProperty($name, $value);
     }
 
     /**
