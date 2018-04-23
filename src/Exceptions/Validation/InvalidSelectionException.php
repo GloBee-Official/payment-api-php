@@ -9,6 +9,13 @@ class InvalidSelectionException extends ValidationException
      */
     private $options;
 
+    /**
+     * InvalidSelectionException constructor.
+     *
+     * @param string $field
+     * @param mixed  $value
+     * @param array $options
+     */
     public function __construct($field, $value, array $options)
     {
         $this->options = $options;

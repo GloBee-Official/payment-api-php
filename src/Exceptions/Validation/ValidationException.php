@@ -9,6 +9,12 @@ class ValidationException extends \InvalidArgumentException
      */
     private $errors;
 
+    /**
+     * ValidationException constructor.
+     *
+     * @param array  $errors
+     * @param string $message
+     */
     public function __construct(array $errors, $message = 'Validation Failed')
     {
         parent::__construct($message);

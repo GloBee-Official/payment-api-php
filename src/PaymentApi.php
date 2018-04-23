@@ -13,11 +13,21 @@ class PaymentApi
      */
     private $connector;
 
+    /**
+     * PaymentApi constructor.
+     *
+     * @param Connector $connector
+     */
     public function __construct(Connector $connector)
     {
         $this->connector = $connector;
     }
 
+    /**
+     * @param string $paymentRequestId
+     *
+     * @return PaymentRequest
+     */
     public function getPaymentRequest($paymentRequestId)
     {
         $response = $this->connector->getJson('v1/payment-request/'.$paymentRequestId);
@@ -25,6 +35,12 @@ class PaymentApi
         return PaymentRequest::fromResponse($response['data']);
     }
 
+    /**
+     * @param PaymentRequest $paymentRequest
+     *
+     * @return PaymentRequest
+     * @throws PaymentRequestAlreadyExistsException
+     */
     public function createPaymentRequest(PaymentRequest $paymentRequest)
     {
         if ($paymentRequest->exists()) {

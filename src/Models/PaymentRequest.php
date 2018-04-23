@@ -24,38 +24,91 @@ class PaymentRequest extends Model
 {
     use PropertyTrait;
 
+    /**
+     * @var float
+     */
     protected $total = 0.0;
 
+    /**
+     * @var string
+     */
     protected $currency = 'USD';
 
+    /**
+     * @var string
+     */
     protected $customPaymentId;
 
+    /**
+     * @var string|array
+     */
     protected $callbackData;
 
+    /**
+     * @var string
+     */
     protected $customerName;
 
+    /**
+     * @var string
+     */
     protected $customerEmail;
 
+    /**
+     * @var string
+     */
     protected $successUrl;
 
+    /**
+     * @var string
+     */
     protected $cancelUrl;
 
+    /**
+     * @var string
+     */
     protected $ipnUrl;
 
+    /**
+     * @var string
+     */
     protected $notificationEmail;
 
+    /**
+     * @var string
+     */
     protected $confirmationSpeed = 'medium';
 
+    /**
+     * @var string
+     */
     private $id;
 
+    /**
+     * @var string
+     */
     private $status;
 
+    /**
+     * @var string
+     */
     private $redirectUrl;
 
+    /**
+     * @var string
+     */
     private $expiresAt;
 
+    /**
+     * @var string
+     */
     private $createdAt;
 
+    /**
+     * @param array $data
+     *
+     * @return PaymentRequest
+     */
     public static function fromResponse(array $data)
     {
         $self = new self();
@@ -178,6 +231,9 @@ class PaymentRequest extends Model
         $this->confirmationSpeed = $confirmationSpeed;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $callbackData = $this->callbackData;
@@ -207,11 +263,17 @@ class PaymentRequest extends Model
         ];
     }
 
+    /**
+     * @return bool
+     */
     public function isValid()
     {
         return $this->total > 0 && null !== $this->customerEmail;
     }
 
+    /**
+     * @return bool
+     */
     public function exists()
     {
         return $this->id !== null;
