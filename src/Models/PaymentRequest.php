@@ -60,17 +60,22 @@ class PaymentRequest extends Model
     {
         $self = new self();
 
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $subKey => $subValue) {
-                    if ($key === 'customer') {
-                        $self->setProperty('customer_'.$subKey, $subValue);
-                    }
-                }
-                continue;
-            }
-            $self->setProperty($key, $value);
-        }
+        $self->id = $data['id'];
+        $self->status = $data['status'];
+        $self->total = $data['total'];
+        $self->currency = $data['currency'];
+        $self->customPaymentId = $data['custom_payment_id'];
+        $self->callbackData = $data['callback_data'];
+        $self->customerName = $data['customer']['name'];
+        $self->customerEmail = $data['customer']['email'];
+        $self->redirectUrl = $data['redirect_url'];
+        $self->successUrl = $data['success_url'];
+        $self->cancelUrl = $data['cancel_url'];
+        $self->ipnUrl = $data['ipn_url'];
+        $self->notificationEmail = $data['notification_email'];
+        $self->confirmationSpeed = $data['confirmation_speed'];
+        $self->expiresAt = $data['expires_at'];
+        $self->createdAt = $data['created_at'];
 
         return $self;
     }
