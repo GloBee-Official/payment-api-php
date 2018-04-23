@@ -93,6 +93,25 @@ class PaymentRequestTest extends TestCase
         $this->assertNull($this->paymentRequest->getNotificationEmail());
     }
 
+    public function test_nullable_fields_should_not_throw_an_exception()
+    {
+        $this->paymentRequest->customPaymentId = null;
+        $this->paymentRequest->callbackData = null;
+        $this->paymentRequest->customerName = null;
+        $this->paymentRequest->successUrl = null;
+        $this->paymentRequest->cancelUrl = null;
+        $this->paymentRequest->ipnUrl = null;
+        $this->paymentRequest->notificationEmail = null;
+
+        $this->assertNull($this->paymentRequest->customPaymentId);
+        $this->assertNull($this->paymentRequest->callbackData);
+        $this->assertNull($this->paymentRequest->customerName);
+        $this->assertNull($this->paymentRequest->successUrl);
+        $this->assertNull($this->paymentRequest->cancelUrl);
+        $this->assertNull($this->paymentRequest->ipnUrl);
+        $this->assertNull($this->paymentRequest->notificationEmail);
+    }
+
     public function test_should_throw_exception_if_total_is_not_more_than_zero()
     {
         try {

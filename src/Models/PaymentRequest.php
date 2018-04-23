@@ -119,7 +119,9 @@ class PaymentRequest extends Model
      */
     public function setSuccessUrl($successUrl)
     {
-        $this->validateUrl('success_url', $successUrl);
+        if ($successUrl !== null) {
+            $this->validateUrl('success_url', $successUrl);
+        }
         $this->successUrl = $successUrl;
     }
 
@@ -128,7 +130,9 @@ class PaymentRequest extends Model
      */
     public function setCancelUrl($cancelUrl)
     {
-        $this->validateUrl('cancel_url', $cancelUrl);
+        if ($cancelUrl !== null) {
+            $this->validateUrl('cancel_url', $cancelUrl);
+        }
         $this->cancelUrl = $cancelUrl;
     }
 
@@ -137,7 +141,9 @@ class PaymentRequest extends Model
      */
     public function setIpnUrl($ipnUrl)
     {
-        $this->validateUrl('ipn_url', $ipnUrl);
+        if ($ipnUrl !== null) {
+            $this->validateUrl('ipn_url', $ipnUrl);
+        }
         $this->ipnUrl = $ipnUrl;
     }
 
@@ -146,7 +152,9 @@ class PaymentRequest extends Model
      */
     public function setNotificationEmail($notificationEmail)
     {
-        $this->validateEmail('notification_email', $notificationEmail);
+        if ($notificationEmail !== null) {
+            $this->validateEmail('notification_email', $notificationEmail);
+        }
         $this->notificationEmail = $notificationEmail;
     }
 
