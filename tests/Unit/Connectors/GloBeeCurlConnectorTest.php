@@ -10,6 +10,7 @@ use GloBee\PaymentApi\Exceptions\Http\HttpException;
 use GloBee\PaymentApi\Exceptions\Http\NotFoundException;
 use GloBee\PaymentApi\Exceptions\Http\ServerErrorException;
 use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
+use GloBee\PaymentApi\PaymentApi;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -28,7 +29,7 @@ class GloBeeCurlConnectorTest extends TestCase
     public function setUp()
     {
         $this->wrapperMock = \Mockery::mock(CurlWrapper::class);
-        $this->connector = new GloBeeCurlConnector('1234', 'https://globee.com', $this->wrapperMock);
+        $this->connector = new GloBeeCurlConnector('1234', 'https://globee.com', [], $this->wrapperMock);
     }
 
     public function test_can_get_data_from_request()
@@ -41,12 +42,36 @@ class GloBeeCurlConnectorTest extends TestCase
             CURLOPT_HTTPHEADER => [
                 'X-AUTH-KEY: 1234',
             ],
+            CURLOPT_USERAGENT => $this->getUserAgentString(),
         ])->once();
 
         $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
         $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
 
         $this->assertSame('OK', $this->connector->getJson('test'));
+    }
+
+    public function test_can_set_custom_platforms()
+    {
+        $connector = new GloBeeCurlConnector('1234', 'https://globee.com', [
+            'TestPlatform' => '1.2.3',
+            'AnotherPlatform' => '4.5.6',
+        ], $this->wrapperMock);
+        $this->shouldReceiveSetOptions([
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => 'https://globee.com/test',
+            CURLOPT_ACCEPT_ENCODING => 'application/json',
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                'X-AUTH-KEY: 1234',
+            ],
+            CURLOPT_USERAGENT => $this->getUserAgentString().' TestPlatform/1.2.3 AnotherPlatform/4.5.6',
+        ])->once();
+
+        $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
+        $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
+
+        $this->assertSame('OK', $connector->getJson('test'));
     }
 
     public function test_can_post_data()
@@ -60,6 +85,7 @@ class GloBeeCurlConnectorTest extends TestCase
                 'X-AUTH-KEY: 1234',
                 'Content-Type: application/json',
             ],
+            CURLOPT_USERAGENT => $this->getUserAgentString(),
         ])->once();
 
         $this->wrapperMock->shouldReceive('setOption')
@@ -186,5 +212,13 @@ class GloBeeCurlConnectorTest extends TestCase
 
                 return true;
             }));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getUserAgentString()
+    {
+        return 'GloBeePaymentSdk/'.PaymentApi::VERSION.' ('.PHP_OS.') PHP/'.PHP_VERSION;
     }
 }

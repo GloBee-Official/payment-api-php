@@ -2,6 +2,8 @@
 
 namespace GloBee\PaymentApi\Connectors;
 
+use GloBee\PaymentApi\PaymentApi;
+
 class GloBeeCurlConnector extends Connector
 {
     /**
@@ -20,16 +22,23 @@ class GloBeeCurlConnector extends Connector
     private $client;
 
     /**
+     * @var array
+     */
+    private $platforms;
+
+    /**
      * GloBeeCurlConnector constructor.
      *
      * @param string           $apiKey
      * @param string           $baseUrl
+     * @param array            $platforms
      * @param CurlWrapper|null $curlConnector
      */
-    public function __construct($apiKey, $baseUrl = null, CurlWrapper $curlConnector = null)
+    public function __construct($apiKey, $baseUrl = null, array $platforms, CurlWrapper $curlConnector = null)
     {
         $this->apiKey = $apiKey;
         $this->baseUrl = $baseUrl ?: 'https://globee.com/payment-api';
+        $this->platforms = $platforms;
         $this->client = $curlConnector ?: new CurlWrapper();
     }
 
@@ -76,6 +85,7 @@ class GloBeeCurlConnector extends Connector
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_USERAGENT => $this->getUserAgentString(),
         ]);
 
         if ($method !== 'GET' && $body) {
@@ -109,5 +119,17 @@ class GloBeeCurlConnector extends Connector
         }
 
         return $return;
+    }
+
+    protected function getUserAgentString()
+    {
+        $platforms = $this->platforms;
+        array_walk($platforms, function (&$version, $platform) {
+            $version = $platform.'/'.$version;
+        });
+        $platforms = implode(' ', $platforms);
+        $userAgent = sprintf('GloBeePaymentSdk/%s (%s) PHP/%s', PaymentApi::VERSION, PHP_OS, PHP_VERSION);
+
+        return trim($userAgent.' '.$platforms);
     }
 }
