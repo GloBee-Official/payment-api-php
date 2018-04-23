@@ -60,12 +60,16 @@ class PaymentRequest extends Model
     {
         $self = new self();
 
+        $callbackData = json_decode($data['callback_data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $callbackData = $data['callback_data'];
+        }
         $self->id = $data['id'];
         $self->status = $data['status'];
         $self->total = $data['total'];
         $self->currency = $data['currency'];
         $self->customPaymentId = $data['custom_payment_id'];
-        $self->callbackData = $data['callback_data'];
+        $self->callbackData = $callbackData;
         $self->customerName = $data['customer']['name'];
         $self->customerEmail = $data['customer']['email'];
         $self->redirectUrl = $data['redirect_url'];
@@ -176,13 +180,18 @@ class PaymentRequest extends Model
 
     public function toArray()
     {
+        $callbackData = $this->callbackData;
+        if (is_array($callbackData)) {
+            $callbackData = json_encode($callbackData);
+        }
+
         return [
             'id' => $this->id,
             'status' => $this->status,
             'total' => $this->total,
             'currency' => $this->currency,
             'custom_payment_id' => $this->customPaymentId,
-            'callback_data' => $this->callbackData,
+            'callback_data' => $callbackData,
             'customer' => [
                 'name' => $this->customerName,
                 'email' => $this->customerEmail,

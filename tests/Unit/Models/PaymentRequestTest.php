@@ -354,6 +354,25 @@ class PaymentRequestTest extends TestCase
         $this->assertSame($data, $paymentRequest->toArray());
     }
 
+    public function test_callback_data_should_be_stored_as_json()
+    {
+        $this->paymentRequest->callbackData = ['key' => 'value'];
+
+        $this->assertSame(['key' => 'value'], $this->paymentRequest->callbackData);
+
+        $array = $this->paymentRequest->toArray();
+        $this->assertSame('{"key":"value"}', $array['callback_data']);
+    }
+
+    public function test_if_callback_data_is_json_it_should_be_decoded_from_response()
+    {
+        $data = $this->getValidPaymentRequestResponse()['data'];
+        $data['callback_data'] = json_encode(['key' => 'value']);
+        $paymentRequest = PaymentRequest::fromResponse($data);
+
+        $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
+    }
+
     public function test_exists_return_false_on_new_payment_request()
     {
         $this->assertFalse($this->paymentRequest->exists());
