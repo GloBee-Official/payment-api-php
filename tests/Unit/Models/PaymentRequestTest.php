@@ -15,7 +15,7 @@ use Tests\TestCase;
 class PaymentRequestTest extends TestCase
 {
     /**
-     * @var PaymentApi
+     * @var PaymentRequest
      */
     private $paymentRequest;
 
