@@ -346,6 +346,14 @@ class PaymentRequestTest extends TestCase
         $this->assertEquals('https://www.example.com/globee/ipn-callback', $paymentRequest->getIpnUrl());
     }
 
+    public function test_can_convert_object_to_array()
+    {
+        $data = $this->getValidPaymentRequestResponse()['data'];
+        $paymentRequest = PaymentRequest::fromResponse($data);
+
+        $this->assertSame($data, $paymentRequest->toArray());
+    }
+
     public function test_exists_return_false_on_new_payment_request()
     {
         $this->assertFalse($this->paymentRequest->exists());
