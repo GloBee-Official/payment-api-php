@@ -15,7 +15,7 @@ use Tests\TestCase;
 class PaymentRequestTest extends TestCase
 {
     /**
-     * @var PaymentApi
+     * @var PaymentRequest
      */
     private $paymentRequest;
 
@@ -24,7 +24,7 @@ class PaymentRequestTest extends TestCase
         $this->paymentRequest = new PaymentRequest();
     }
 
-    public function test_can_set_valid_data_on_model()
+    public function test_can_set_valid_data_on_model_using_getters_and_setters()
     {
         $this->paymentRequest->setTotal(100);
         $this->paymentRequest->setCurrency('ABC');
@@ -51,6 +51,33 @@ class PaymentRequestTest extends TestCase
         $this->assertEquals('low', $this->paymentRequest->getConfirmationSpeed());
     }
 
+    public function test_can_set_valid_data_on_model_using_properties()
+    {
+        $this->paymentRequest->total = 98765.4321;
+        $this->paymentRequest->currency = 'DEF';
+        $this->paymentRequest->customPaymentId = 'custom_payment_id';
+        $this->paymentRequest->callbackData = 'test callback data';
+        $this->paymentRequest->customerName = 'Test Name';
+        $this->paymentRequest->customerEmail = 'customer@email.com';
+        $this->paymentRequest->successUrl = 'https://www.example.com/success';
+        $this->paymentRequest->cancelUrl = 'https://www.example.com/cancel';
+        $this->paymentRequest->ipnUrl = 'https://www.example.com/ipn';
+        $this->paymentRequest->notificationEmail = 'notification@email.com';
+        $this->paymentRequest->confirmationSpeed = 'high';
+
+        $this->assertEquals(98765.4321, $this->paymentRequest->total);
+        $this->assertEquals('DEF', $this->paymentRequest->currency);
+        $this->assertEquals('custom_payment_id', $this->paymentRequest->customPaymentId);
+        $this->assertEquals('test callback data', $this->paymentRequest->callbackData);
+        $this->assertEquals('Test Name', $this->paymentRequest->customerName);
+        $this->assertEquals('customer@email.com', $this->paymentRequest->customerEmail);
+        $this->assertEquals('https://www.example.com/success', $this->paymentRequest->successUrl);
+        $this->assertEquals('https://www.example.com/cancel', $this->paymentRequest->cancelUrl);
+        $this->assertEquals('https://www.example.com/ipn', $this->paymentRequest->ipnUrl);
+        $this->assertEquals('notification@email.com', $this->paymentRequest->notificationEmail);
+        $this->assertEquals('high', $this->paymentRequest->confirmationSpeed);
+    }
+
     public function test_sensible_defaults()
     {
         $this->assertSame(0.0, $this->paymentRequest->getTotal());
@@ -64,6 +91,25 @@ class PaymentRequestTest extends TestCase
         $this->assertNull($this->paymentRequest->getCancelUrl());
         $this->assertNull($this->paymentRequest->getIpnUrl());
         $this->assertNull($this->paymentRequest->getNotificationEmail());
+    }
+
+    public function test_nullable_fields_should_not_throw_an_exception()
+    {
+        $this->paymentRequest->customPaymentId = null;
+        $this->paymentRequest->callbackData = null;
+        $this->paymentRequest->customerName = null;
+        $this->paymentRequest->successUrl = null;
+        $this->paymentRequest->cancelUrl = null;
+        $this->paymentRequest->ipnUrl = null;
+        $this->paymentRequest->notificationEmail = null;
+
+        $this->assertNull($this->paymentRequest->customPaymentId);
+        $this->assertNull($this->paymentRequest->callbackData);
+        $this->assertNull($this->paymentRequest->customerName);
+        $this->assertNull($this->paymentRequest->successUrl);
+        $this->assertNull($this->paymentRequest->cancelUrl);
+        $this->assertNull($this->paymentRequest->ipnUrl);
+        $this->assertNull($this->paymentRequest->notificationEmail);
     }
 
     public function test_should_throw_exception_if_total_is_not_more_than_zero()
@@ -298,6 +344,33 @@ class PaymentRequestTest extends TestCase
         $this->assertEquals('https://www.example.com/success', $paymentRequest->getSuccessUrl());
         $this->assertEquals('https://www.example.com/cancel', $paymentRequest->getCancelUrl());
         $this->assertEquals('https://www.example.com/globee/ipn-callback', $paymentRequest->getIpnUrl());
+    }
+
+    public function test_can_convert_object_to_array()
+    {
+        $data = $this->getValidPaymentRequestResponse()['data'];
+        $paymentRequest = PaymentRequest::fromResponse($data);
+
+        $this->assertSame($data, $paymentRequest->toArray());
+    }
+
+    public function test_callback_data_should_be_stored_as_json()
+    {
+        $this->paymentRequest->callbackData = ['key' => 'value'];
+
+        $this->assertSame(['key' => 'value'], $this->paymentRequest->callbackData);
+
+        $array = $this->paymentRequest->toArray();
+        $this->assertSame('{"key":"value"}', $array['callback_data']);
+    }
+
+    public function test_if_callback_data_is_json_it_should_be_decoded_from_response()
+    {
+        $data = $this->getValidPaymentRequestResponse()['data'];
+        $data['callback_data'] = json_encode(['key' => 'value']);
+        $paymentRequest = PaymentRequest::fromResponse($data);
+
+        $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
     }
 
     public function test_exists_return_false_on_new_payment_request()

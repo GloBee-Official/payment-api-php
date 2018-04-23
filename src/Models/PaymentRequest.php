@@ -2,67 +2,139 @@
 
 namespace GloBee\PaymentApi\Models;
 
+/**
+ * @property string $id
+ * @property string $status
+ * @property float $total
+ * @property string $currency
+ * @property string $customPaymentId
+ * @property mixed $callbackData
+ * @property string $customerName
+ * @property string $customerEmail
+ * @property string $redirectUrl
+ * @property string $successUrl
+ * @property string $cancelUrl
+ * @property string $ipnUrl
+ * @property string $notificationEmail
+ * @property string $confirmationSpeed
+ * @property string $expiresAt
+ * @property string $createdAt
+ */
 class PaymentRequest extends Model
 {
     use PropertyTrait;
 
+    /**
+     * @var float
+     */
     protected $total = 0.0;
 
+    /**
+     * @var string
+     */
     protected $currency = 'USD';
 
+    /**
+     * @var string
+     */
     protected $customPaymentId;
 
+    /**
+     * @var string|array
+     */
     protected $callbackData;
 
+    /**
+     * @var string
+     */
     protected $customerName;
 
+    /**
+     * @var string
+     */
     protected $customerEmail;
 
+    /**
+     * @var string
+     */
     protected $successUrl;
 
+    /**
+     * @var string
+     */
     protected $cancelUrl;
 
+    /**
+     * @var string
+     */
     protected $ipnUrl;
 
+    /**
+     * @var string
+     */
     protected $notificationEmail;
 
+    /**
+     * @var string
+     */
     protected $confirmationSpeed = 'medium';
 
+    /**
+     * @var string
+     */
     private $id;
 
+    /**
+     * @var string
+     */
     private $status;
 
+    /**
+     * @var string
+     */
     private $redirectUrl;
 
+    /**
+     * @var string
+     */
     private $expiresAt;
 
+    /**
+     * @var string
+     */
     private $createdAt;
 
+    /**
+     * @param array $data
+     *
+     * @return PaymentRequest
+     */
     public static function fromResponse(array $data)
     {
         $self = new self();
 
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $subKey => $subValue) {
-                    if ($key === 'customer') {
-                        $self->setProperty('customer_'.$subKey, $subValue);
-                    }
-                }
-                continue;
-            }
-            $self->setProperty($key, $value);
+        $callbackData = json_decode($data['callback_data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $callbackData = $data['callback_data'];
         }
+        $self->id = $data['id'];
+        $self->status = $data['status'];
+        $self->total = $data['total'];
+        $self->currency = $data['currency'];
+        $self->customPaymentId = $data['custom_payment_id'];
+        $self->callbackData = $callbackData;
+        $self->customerName = $data['customer']['name'];
+        $self->customerEmail = $data['customer']['email'];
+        $self->redirectUrl = $data['redirect_url'];
+        $self->successUrl = $data['success_url'];
+        $self->cancelUrl = $data['cancel_url'];
+        $self->ipnUrl = $data['ipn_url'];
+        $self->notificationEmail = $data['notification_email'];
+        $self->confirmationSpeed = $data['confirmation_speed'];
+        $self->expiresAt = $data['expires_at'];
+        $self->createdAt = $data['created_at'];
 
         return $self;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTotal()
-    {
-        return $this->total;
     }
 
     /**
@@ -78,14 +150,6 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @return mixed
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
-
-    /**
      * @param mixed $currency
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
@@ -95,62 +159,6 @@ class PaymentRequest extends Model
     {
         $this->validateStringLength('currency', $currency, 3);
         $this->currency = strtoupper($currency);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCustomPaymentId()
-    {
-        return $this->customPaymentId;
-    }
-
-    /**
-     * @param mixed $customPaymentId
-     */
-    public function setCustomPaymentId($customPaymentId)
-    {
-        $this->customPaymentId = $customPaymentId;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCallbackData()
-    {
-        return $this->callbackData;
-    }
-
-    /**
-     * @param mixed $callbackData
-     */
-    public function setCallbackData($callbackData)
-    {
-        $this->callbackData = $callbackData;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCustomerName()
-    {
-        return $this->customerName;
-    }
-
-    /**
-     * @param mixed $customerName
-     */
-    public function setCustomerName($customerName)
-    {
-        $this->customerName = $customerName;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCustomerEmail()
-    {
-        return $this->customerEmail;
     }
 
     /**
@@ -166,14 +174,6 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @return mixed
-     */
-    public function getSuccessUrl()
-    {
-        return $this->successUrl;
-    }
-
-    /**
      * @param mixed $successUrl
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
@@ -181,16 +181,10 @@ class PaymentRequest extends Model
      */
     public function setSuccessUrl($successUrl)
     {
-        $this->validateUrl('success_url', $successUrl);
+        if ($successUrl !== null) {
+            $this->validateUrl('success_url', $successUrl);
+        }
         $this->successUrl = $successUrl;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCancelUrl()
-    {
-        return $this->cancelUrl;
     }
 
     /**
@@ -198,16 +192,10 @@ class PaymentRequest extends Model
      */
     public function setCancelUrl($cancelUrl)
     {
-        $this->validateUrl('cancel_url', $cancelUrl);
+        if ($cancelUrl !== null) {
+            $this->validateUrl('cancel_url', $cancelUrl);
+        }
         $this->cancelUrl = $cancelUrl;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIpnUrl()
-    {
-        return $this->ipnUrl;
     }
 
     /**
@@ -215,16 +203,10 @@ class PaymentRequest extends Model
      */
     public function setIpnUrl($ipnUrl)
     {
-        $this->validateUrl('ipn_url', $ipnUrl);
+        if ($ipnUrl !== null) {
+            $this->validateUrl('ipn_url', $ipnUrl);
+        }
         $this->ipnUrl = $ipnUrl;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNotificationEmail()
-    {
-        return $this->notificationEmail;
     }
 
     /**
@@ -232,16 +214,10 @@ class PaymentRequest extends Model
      */
     public function setNotificationEmail($notificationEmail)
     {
-        $this->validateEmail('notification_email', $notificationEmail);
+        if ($notificationEmail !== null) {
+            $this->validateEmail('notification_email', $notificationEmail);
+        }
         $this->notificationEmail = $notificationEmail;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getConfirmationSpeed()
-    {
-        return $this->confirmationSpeed;
     }
 
     /**
@@ -256,54 +232,22 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRedirectUrl()
-    {
-        return $this->redirectUrl;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getExpiresAt()
-    {
-        return $this->expiresAt;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
     public function toArray()
     {
+        $callbackData = $this->callbackData;
+        if (is_array($callbackData)) {
+            $callbackData = json_encode($callbackData);
+        }
+
         return [
             'id' => $this->id,
             'status' => $this->status,
             'total' => $this->total,
             'currency' => $this->currency,
             'custom_payment_id' => $this->customPaymentId,
-            'callback_data' => $this->callbackData,
+            'callback_data' => $callbackData,
             'customer' => [
                 'name' => $this->customerName,
                 'email' => $this->customerEmail,
@@ -319,11 +263,17 @@ class PaymentRequest extends Model
         ];
     }
 
+    /**
+     * @return bool
+     */
     public function isValid()
     {
         return $this->total > 0 && null !== $this->customerEmail;
     }
 
+    /**
+     * @return bool
+     */
     public function exists()
     {
         return $this->id !== null;
