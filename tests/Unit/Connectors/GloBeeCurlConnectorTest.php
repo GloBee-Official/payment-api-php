@@ -191,7 +191,7 @@ class GloBeeCurlConnectorTest extends TestCase
      *
      * @return mixed
      */
-    public function shouldReceiveSetOptions(array $_options)
+    protected function shouldReceiveSetOptions(array $_options)
     {
         return $this->wrapperMock->shouldReceive('setOptions')
             ->with(\Mockery::on(function ($options) use ($_options) {
