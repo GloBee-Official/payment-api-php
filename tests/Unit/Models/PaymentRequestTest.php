@@ -24,7 +24,7 @@ class PaymentRequestTest extends TestCase
         $this->paymentRequest = new PaymentRequest();
     }
 
-    public function test_can_set_valid_data_on_model()
+    public function test_can_set_valid_data_on_model_using_getters_and_setters()
     {
         $this->paymentRequest->setTotal(100);
         $this->paymentRequest->setCurrency('ABC');
@@ -49,6 +49,33 @@ class PaymentRequestTest extends TestCase
         $this->assertEquals('https://www.example.com/ipn', $this->paymentRequest->getIpnUrl());
         $this->assertEquals('notification@email.com', $this->paymentRequest->getNotificationEmail());
         $this->assertEquals('low', $this->paymentRequest->getConfirmationSpeed());
+    }
+
+    public function test_can_set_valid_data_on_model_using_properties()
+    {
+        $this->paymentRequest->total = 98765.4321;
+        $this->paymentRequest->currency = 'DEF';
+        $this->paymentRequest->customPaymentId = 'custom_payment_id';
+        $this->paymentRequest->callbackData = 'test callback data';
+        $this->paymentRequest->customerName = 'Test Name';
+        $this->paymentRequest->customerEmail = 'customer@email.com';
+        $this->paymentRequest->successUrl = 'https://www.example.com/success';
+        $this->paymentRequest->cancelUrl = 'https://www.example.com/cancel';
+        $this->paymentRequest->ipnUrl = 'https://www.example.com/ipn';
+        $this->paymentRequest->notificationEmail = 'notification@email.com';
+        $this->paymentRequest->confirmationSpeed = 'high';
+
+        $this->assertEquals(98765.4321, $this->paymentRequest->total);
+        $this->assertEquals('DEF', $this->paymentRequest->currency);
+        $this->assertEquals('custom_payment_id', $this->paymentRequest->customPaymentId);
+        $this->assertEquals('test callback data', $this->paymentRequest->callbackData);
+        $this->assertEquals('Test Name', $this->paymentRequest->customerName);
+        $this->assertEquals('customer@email.com', $this->paymentRequest->customerEmail);
+        $this->assertEquals('https://www.example.com/success', $this->paymentRequest->successUrl);
+        $this->assertEquals('https://www.example.com/cancel', $this->paymentRequest->cancelUrl);
+        $this->assertEquals('https://www.example.com/ipn', $this->paymentRequest->ipnUrl);
+        $this->assertEquals('notification@email.com', $this->paymentRequest->notificationEmail);
+        $this->assertEquals('high', $this->paymentRequest->confirmationSpeed);
     }
 
     public function test_sensible_defaults()

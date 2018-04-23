@@ -24,6 +24,24 @@ trait PropertyTrait
         }
     }
 
+    public function __get($name)
+    {
+        $methodName = 'get'.$this->strToStudlyCase($name);
+        if (method_exists($this, $methodName)) {
+            return $this->{$methodName}();
+        }
+    }
+
+    public function __set($name, $value)
+    {
+        $methodName = 'set'.$this->strToStudlyCase($name);
+        if (method_exists($this, $methodName)) {
+            $this->{$methodName}($value);
+
+            return;
+        }
+    }
+
     /**
      * @param $key
      *

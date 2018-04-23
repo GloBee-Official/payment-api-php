@@ -2,6 +2,24 @@
 
 namespace GloBee\PaymentApi\Models;
 
+/**
+ * @property string $id
+ * @property string $status
+ * @property float $total
+ * @property string $currency
+ * @property string $customPaymentId
+ * @property mixed $callbackData
+ * @property string $customerName
+ * @property string $customerEmail
+ * @property string $redirectUrl
+ * @property string $successUrl
+ * @property string $cancelUrl
+ * @property string $ipnUrl
+ * @property string $notificationEmail
+ * @property string $confirmationSpeed
+ * @property string $expiresAt
+ * @property string $createdAt
+ */
 class PaymentRequest extends Model
 {
     use PropertyTrait;
