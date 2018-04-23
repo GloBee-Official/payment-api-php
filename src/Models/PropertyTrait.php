@@ -5,7 +5,24 @@ namespace GloBee\PaymentApi\Models;
 trait PropertyTrait
 {
     /**
-     * @param $key
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getProperty($name)
+    {
+        $methodName = 'get'.$this->strToStudlyCase($name);
+        if (method_exists($this, $methodName)) {
+            return $this->{$methodName}();
+        }
+
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
+    }
+
+    /**
+     * @param $name
      * @param $value
      */
     protected function setProperty($name, $value)
@@ -24,28 +41,29 @@ trait PropertyTrait
         }
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     *
+     * @return mixed|void
+     */
     public function __call($name, $arguments)
     {
         $mutator = substr($name, 0, 3);
         if ($mutator === 'get') {
-            return $this->__get(lcfirst(substr($name, 3)));
+            return $this->getProperty(lcfirst(substr($name, 3)));
         }
 
         if ($mutator === 'set') {
-            return $this->__set(lcfirst(substr($name, 3)), $arguments[0]);
+            $this->setProperty(lcfirst(substr($name, 3)), $arguments[0]);
+
+            return;
         }
     }
 
     public function __get($name)
     {
-        $methodName = 'get'.$this->strToStudlyCase($name);
-        if (method_exists($this, $methodName)) {
-            return $this->{$methodName}();
-        }
-
-        if (property_exists($this, $name)) {
-            return $this->{$name};
-        }
+        return $this->getProperty($name);
     }
 
     public function __set($name, $value)
