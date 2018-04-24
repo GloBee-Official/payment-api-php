@@ -8,6 +8,8 @@ use GloBee\PaymentApi\Models\PaymentRequest;
 
 class PaymentApi
 {
+    const VERSION = '0.1.0';
+
     /**
      * @var Connector
      */
