@@ -30,6 +30,7 @@ class CurlConnectionExceptionTest extends TestCase
         } catch (CurlConnectionException $e) {
             $this->assertSame('Test Error Message', $e->getMessage());
             $this->assertSame(42, $e->getCode());
+            $this->assertSame($this->curlWrapper, $e->getCurlConnector());
         }
     }
 
