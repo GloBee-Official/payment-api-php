@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use GloBee\PaymentApi\Connectors\Connector;
 use GloBee\PaymentApi\Exceptions\PaymentRequestAlreadyExistsException;
+use GloBee\PaymentApi\Models\Account;
 use GloBee\PaymentApi\Models\PaymentRequest;
 use GloBee\PaymentApi\PaymentApi;
 use Mockery\MockInterface;
@@ -83,5 +84,23 @@ class PaymentApiTest extends TestCase
         } catch (PaymentRequestAlreadyExistsException $e) {
             $this->addToAssertionCount(1);
         }
+    }
+
+    public function test_fetch_account_information()
+    {
+        $this->connector->shouldReceive('getJson')->withArgs(['v1/ping'])->andReturn([
+            'success' => true,
+            'data' => [
+                'name' => 'TEST NAME',
+                'url' => 'https://example.com'
+            ]
+        ]);
+
+        $account = $this->paymentApi->getAccount();
+
+        // Account
+        $this->assertInstanceOf(Account::class, $account);
+        $this->assertSame('TEST NAME', $account->name);
+        $this->assertSame('https://example.com', $account->url);
     }
 }
