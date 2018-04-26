@@ -143,7 +143,7 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\BelowMinimumException
      */
-    public function setTotal($total)
+    protected function setTotal($total)
     {
         $this->validateNumberAboveMinimum('total', $total, 0);
         $this->total = $total;
@@ -155,7 +155,7 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    public function setCurrency($currency)
+    protected function setCurrency($currency)
     {
         $this->validateStringLength('currency', $currency, 3);
         $this->currency = strtoupper($currency);
@@ -167,7 +167,7 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
      */
-    public function setCustomerEmail($customerEmail)
+    protected function setCustomerEmail($customerEmail)
     {
         $this->validateEmail('customer.email', $customerEmail);
         $this->customerEmail = $customerEmail;
@@ -179,7 +179,7 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException
      */
-    public function setSuccessUrl($successUrl)
+    protected function setSuccessUrl($successUrl)
     {
         if ($successUrl !== null) {
             $this->validateUrl('success_url', $successUrl);
@@ -190,7 +190,7 @@ class PaymentRequest extends Model
     /**
      * @param mixed $cancelUrl
      */
-    public function setCancelUrl($cancelUrl)
+    protected function setCancelUrl($cancelUrl)
     {
         if ($cancelUrl !== null) {
             $this->validateUrl('cancel_url', $cancelUrl);
@@ -201,7 +201,7 @@ class PaymentRequest extends Model
     /**
      * @param mixed $ipnUrl
      */
-    public function setIpnUrl($ipnUrl)
+    protected function setIpnUrl($ipnUrl)
     {
         if ($ipnUrl !== null) {
             $this->validateUrl('ipn_url', $ipnUrl);
@@ -212,7 +212,7 @@ class PaymentRequest extends Model
     /**
      * @param mixed $notificationEmail
      */
-    public function setNotificationEmail($notificationEmail)
+    protected function setNotificationEmail($notificationEmail)
     {
         if ($notificationEmail !== null) {
             $this->validateEmail('notification_email', $notificationEmail);
@@ -225,7 +225,7 @@ class PaymentRequest extends Model
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException
      */
-    public function setConfirmationSpeed($confirmationSpeed)
+    protected function setConfirmationSpeed($confirmationSpeed)
     {
         $this->validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
         $this->confirmationSpeed = $confirmationSpeed;

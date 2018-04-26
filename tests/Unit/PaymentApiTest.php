@@ -39,7 +39,7 @@ class PaymentApiTest extends TestCase
         $paymentRequest = $this->paymentApi->getPaymentRequest('a1B2c3D4e5F6g7H8i9J0kL');
 
         $this->assertInstanceOf(PaymentRequest::class, $paymentRequest);
-        $this->assertSame('a1B2c3D4e5F6g7H8i9J0kL', $paymentRequest->getId());
+        $this->assertSame('a1B2c3D4e5F6g7H8i9J0kL', $paymentRequest->id);
     }
 
     public function test_can_create_new_payment_request()
@@ -58,14 +58,14 @@ class PaymentApiTest extends TestCase
             ->once();
 
         $paymentRequest = new PaymentRequest();
-        $paymentRequest->setTotal(123.45);
-        $paymentRequest->setCustomerEmail('john.smit@hotmail.com');
+        $paymentRequest->total = 123.45;
+        $paymentRequest->customerEmail = 'john.smit@hotmail.com';
 
         $response = $this->paymentApi->createPaymentRequest($paymentRequest);
 
         $this->assertInstanceOf(PaymentRequest::class, $response);
-        $this->assertSame('a1B2c3D4e5F6g7H8i9J0kL', $response->getId());
-        $this->assertSame('john.smit@hotmail.com', $response->getCustomerEmail());
+        $this->assertSame('a1B2c3D4e5F6g7H8i9J0kL', $response->id);
+        $this->assertSame('john.smit@hotmail.com', $response->customerEmail);
     }
 
     public function test_should_throw_exception_if_payment_request_already_exists()

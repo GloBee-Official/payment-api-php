@@ -41,26 +41,6 @@ trait PropertyTrait
         }
     }
 
-    /**
-     * @param $name
-     * @param $arguments
-     *
-     * @return mixed|void
-     */
-    public function __call($name, $arguments)
-    {
-        $mutator = substr($name, 0, 3);
-        if ($mutator === 'get') {
-            return $this->getProperty(lcfirst(substr($name, 3)));
-        }
-
-        if ($mutator === 'set') {
-            $this->setProperty(lcfirst(substr($name, 3)), $arguments[0]);
-
-            return;
-        }
-    }
-
     public function __get($name)
     {
         return $this->getProperty($name);
