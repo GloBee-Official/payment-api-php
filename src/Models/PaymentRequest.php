@@ -22,6 +22,7 @@ namespace GloBee\PaymentApi\Models;
  */
 class PaymentRequest extends Model
 {
+    use ValidationTrait;
 
     /**
      * @var float
