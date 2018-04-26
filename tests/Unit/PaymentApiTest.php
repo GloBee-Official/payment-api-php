@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use GloBee\PaymentApi\Connectors\Connector;
+use GloBee\PaymentApi\Connectors\GloBeeCurlConnector;
 use GloBee\PaymentApi\Exceptions\PaymentRequestAlreadyExistsException;
 use GloBee\PaymentApi\Models\Account;
 use GloBee\PaymentApi\Models\Currency;
@@ -14,7 +15,7 @@ use Tests\TestCase;
 class PaymentApiTest extends TestCase
 {
     /**
-     * @var MockInterface
+     * @var MockInterface|GloBeeCurlConnector
      */
     private $connector;
 
