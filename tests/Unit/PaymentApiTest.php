@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use GloBee\PaymentApi\Connectors\Connector;
 use GloBee\PaymentApi\Exceptions\PaymentRequestAlreadyExistsException;
 use GloBee\PaymentApi\Models\Account;
+use GloBee\PaymentApi\Models\Currency;
 use GloBee\PaymentApi\Models\PaymentRequest;
 use GloBee\PaymentApi\PaymentApi;
 use Mockery\MockInterface;
@@ -102,5 +103,35 @@ class PaymentApiTest extends TestCase
         $this->assertInstanceOf(Account::class, $account);
         $this->assertSame('TEST NAME', $account->name);
         $this->assertSame('https://example.com', $account->url);
+    }
+
+    public function test_fetch_list_of_currencies()
+    {
+        $this->connector->shouldReceive('getJson')->withArgs(['v1/currencies'])->andReturn([
+            'success' => true,
+            'data' => [
+                [
+                    'id' => 'ABC',
+                    'name' => 'Test ABC',
+                ],
+                [
+                    'id' => 'DEF',
+                    'name' => 'Test DEF',
+                ],
+                [
+                    'id' => 'XYZ',
+                    'name' => 'Test XYZ',
+                ],
+            ]
+        ]);
+
+        $currencies = $this->paymentApi->getCurrencies();
+
+        $this->assertCount(3, $currencies);
+
+        $usd = array_shift($currencies);
+        $this->assertInstanceOf(Currency::class, $usd);
+        $this->assertSame('ABC', $usd->id);
+        $this->assertSame('Test ABC', $usd->name);
     }
 }
