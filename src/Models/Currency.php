@@ -4,7 +4,6 @@ namespace GloBee\PaymentApi\Models;
 
 class Currency extends Model
 {
-    use PropertyTrait;
 
     protected $id;
     protected $name;

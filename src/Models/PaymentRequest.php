@@ -22,7 +22,6 @@ namespace GloBee\PaymentApi\Models;
  */
 class PaymentRequest extends Model
 {
-    use PropertyTrait;
 
     /**
      * @var float
@@ -82,27 +81,27 @@ class PaymentRequest extends Model
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $status;
+    protected $status;
 
     /**
      * @var string
      */
-    private $redirectUrl;
+    protected $redirectUrl;
 
     /**
      * @var string
      */
-    private $expiresAt;
+    protected $expiresAt;
 
     /**
      * @var string
      */
-    private $createdAt;
+    protected $createdAt;
 
     /**
      * @param array $data

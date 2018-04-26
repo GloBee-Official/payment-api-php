@@ -4,7 +4,6 @@ namespace GloBee\PaymentApi\Models;
 
 class Account extends Model
 {
-    use PropertyTrait;
 
     protected $name;
     protected $url;

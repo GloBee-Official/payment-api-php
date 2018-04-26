@@ -11,6 +11,8 @@ use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
 
 abstract class Model
 {
+    use PropertyTrait;
+
     /**
      * @param $string
      *
