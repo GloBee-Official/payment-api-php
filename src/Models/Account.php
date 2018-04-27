@@ -5,8 +5,10 @@ namespace GloBee\PaymentApi\Models;
 class Account extends Model
 {
 
-    protected $name;
-    protected $url;
+    protected $readonlyProperties = [
+        'name' => null,
+        'url' => null,
+    ];
 
     /**
      * @param array $data
@@ -17,8 +19,8 @@ class Account extends Model
     {
         $self = new self();
 
-        $self->name = $data['name'];
-        $self->url = $data['url'];
+        $self->properties['name'] = $data['name'];
+        $self->properties['url'] = $data['url'];
 
         return $self;
     }
