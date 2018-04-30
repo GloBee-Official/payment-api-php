@@ -16,8 +16,12 @@ trait PropertyTrait
             return $this->{$methodName}();
         }
 
-        if (property_exists($this, $name)) {
-            return $this->{$name};
+        if (array_key_exists($name, $this->properties)) {
+            return $this->properties[$name];
+        }
+
+        if (array_key_exists($name, $this->readonlyProperties)) {
+            return $this->readonlyProperties[$name];
         }
     }
 
@@ -34,8 +38,8 @@ trait PropertyTrait
             return;
         }
 
-        if (property_exists($this, $name)) {
-            $this->{$name} = $value;
+        if (array_key_exists($name, $this->properties)) {
+            $this->properties[$name] = $value;
 
             return;
         }

@@ -24,85 +24,27 @@ class PaymentRequest extends Model
 {
     use ValidationTrait;
 
-    /**
-     * @var float
-     */
-    protected $total = 0.0;
+    protected $properties = [
+        'total' => 0.0,
+        'currency' => 'USD',
+        'customPaymentId' => null,
+        'callbackData' => null,
+        'customerName' => null,
+        'customerEmail' => null,
+        'successUrl' => null,
+        'cancelUrl' => null,
+        'ipnUrl' => null,
+        'notificationUrl' => null,
+        'confirmationSpeed' => 'medium',
+    ];
 
-    /**
-     * @var string
-     */
-    protected $currency = 'USD';
-
-    /**
-     * @var string
-     */
-    protected $customPaymentId;
-
-    /**
-     * @var string|array
-     */
-    protected $callbackData;
-
-    /**
-     * @var string
-     */
-    protected $customerName;
-
-    /**
-     * @var string
-     */
-    protected $customerEmail;
-
-    /**
-     * @var string
-     */
-    protected $successUrl;
-
-    /**
-     * @var string
-     */
-    protected $cancelUrl;
-
-    /**
-     * @var string
-     */
-    protected $ipnUrl;
-
-    /**
-     * @var string
-     */
-    protected $notificationEmail;
-
-    /**
-     * @var string
-     */
-    protected $confirmationSpeed = 'medium';
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $status;
-
-    /**
-     * @var string
-     */
-    protected $redirectUrl;
-
-    /**
-     * @var string
-     */
-    protected $expiresAt;
-
-    /**
-     * @var string
-     */
-    protected $createdAt;
+    protected $readonlyProperties = [
+        'id' => null,
+        'status' => null,
+        'redirectUrl' => null,
+        'expiresAt' => null,
+        'createdAt' => null,
+    ];
 
     /**
      * @param array $data
@@ -117,22 +59,22 @@ class PaymentRequest extends Model
         if (json_last_error() !== JSON_ERROR_NONE) {
             $callbackData = $data['callback_data'];
         }
-        $self->id = $data['id'];
-        $self->status = $data['status'];
-        $self->total = $data['total'];
-        $self->currency = $data['currency'];
-        $self->customPaymentId = $data['custom_payment_id'];
-        $self->callbackData = $callbackData;
-        $self->customerName = $data['customer']['name'];
-        $self->customerEmail = $data['customer']['email'];
-        $self->redirectUrl = $data['redirect_url'];
-        $self->successUrl = $data['success_url'];
-        $self->cancelUrl = $data['cancel_url'];
-        $self->ipnUrl = $data['ipn_url'];
-        $self->notificationEmail = $data['notification_email'];
-        $self->confirmationSpeed = $data['confirmation_speed'];
-        $self->expiresAt = $data['expires_at'];
-        $self->createdAt = $data['created_at'];
+        $self->readonlyProperties['id'] = $data['id'];
+        $self->readonlyProperties['status'] = $data['status'];
+        $self->properties['total'] = $data['total'];
+        $self->properties['currency'] = $data['currency'];
+        $self->properties['customPaymentId'] = $data['custom_payment_id'];
+        $self->properties['callbackData'] = $callbackData;
+        $self->properties['customerName'] = $data['customer']['name'];
+        $self->properties['customerEmail'] = $data['customer']['email'];
+        $self->readonlyProperties['redirectUrl'] = $data['redirect_url'];
+        $self->properties['successUrl'] = $data['success_url'];
+        $self->properties['cancelUrl'] = $data['cancel_url'];
+        $self->properties['ipnUrl'] = $data['ipn_url'];
+        $self->properties['notificationEmail'] = $data['notification_email'];
+        $self->properties['confirmationSpeed'] = $data['confirmation_speed'];
+        $self->readonlyProperties['expiresAt'] = $data['expires_at'];
+        $self->readonlyProperties['createdAt'] = $data['created_at'];
 
         return $self;
     }
@@ -146,7 +88,7 @@ class PaymentRequest extends Model
     protected function setTotal($total)
     {
         $this->validateNumberAboveMinimum('total', $total, 0);
-        $this->total = $total;
+        $this->properties['total'] = $total;
     }
 
     /**
@@ -158,7 +100,7 @@ class PaymentRequest extends Model
     protected function setCurrency($currency)
     {
         $this->validateStringLength('currency', $currency, 3);
-        $this->currency = strtoupper($currency);
+        $this->properties['currency'] = strtoupper($currency);
     }
 
     /**
@@ -170,7 +112,7 @@ class PaymentRequest extends Model
     protected function setCustomerEmail($customerEmail)
     {
         $this->validateEmail('customer.email', $customerEmail);
-        $this->customerEmail = $customerEmail;
+        $this->properties['customerEmail'] = $customerEmail;
     }
 
     /**
@@ -184,7 +126,7 @@ class PaymentRequest extends Model
         if ($successUrl !== null) {
             $this->validateUrl('success_url', $successUrl);
         }
-        $this->successUrl = $successUrl;
+        $this->properties['successUrl'] = $successUrl;
     }
 
     /**
@@ -195,7 +137,7 @@ class PaymentRequest extends Model
         if ($cancelUrl !== null) {
             $this->validateUrl('cancel_url', $cancelUrl);
         }
-        $this->cancelUrl = $cancelUrl;
+        $this->properties['cancelUrl'] = $cancelUrl;
     }
 
     /**
@@ -206,7 +148,7 @@ class PaymentRequest extends Model
         if ($ipnUrl !== null) {
             $this->validateUrl('ipn_url', $ipnUrl);
         }
-        $this->ipnUrl = $ipnUrl;
+        $this->properties['ipnUrl'] = $ipnUrl;
     }
 
     /**
@@ -217,7 +159,7 @@ class PaymentRequest extends Model
         if ($notificationEmail !== null) {
             $this->validateEmail('notification_email', $notificationEmail);
         }
-        $this->notificationEmail = $notificationEmail;
+        $this->properties['notificationEmail'] = $notificationEmail;
     }
 
     /**
@@ -228,7 +170,7 @@ class PaymentRequest extends Model
     protected function setConfirmationSpeed($confirmationSpeed)
     {
         $this->validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
-        $this->confirmationSpeed = $confirmationSpeed;
+        $this->properties['confirmationSpeed'] = $confirmationSpeed;
     }
 
     /**
