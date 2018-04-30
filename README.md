@@ -33,13 +33,13 @@ $paymentApi = new \GloBee\PaymentApi\PaymentApi($connector);
 
 $paymentRequest = new \GloBee\PaymentApi\Models\PaymentRequest();
 
-$paymentRequest->setTotal(123.45);
-$paymentRequest->setCustomerEmail('example@email.com');
+$paymentRequest->total = 123.45;
+$paymentRequest->customerEmail = 'example@email.com';
 
 $response = $paymentApi->createPaymentRequest($paymentRequest);
 
-$paymentRequestId = $response->getId(); // Save this ID to know when payment has been made
-$redirectUrl = $response->getRedirectUrl(); // Redirect your client to this URL to make payment
+$paymentRequestId = $response->id; // Save this ID to know when payment has been made
+$redirectUrl = $response->redirectUrl; // Redirect your client to this URL to make payment
 ```
 
 ### Fetch existing Payment Request

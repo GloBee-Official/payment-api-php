@@ -4,6 +4,8 @@ namespace GloBee\PaymentApi;
 
 use GloBee\PaymentApi\Connectors\Connector;
 use GloBee\PaymentApi\Exceptions\PaymentRequestAlreadyExistsException;
+use GloBee\PaymentApi\Models\Account;
+use GloBee\PaymentApi\Models\Currency;
 use GloBee\PaymentApi\Models\PaymentRequest;
 
 class PaymentApi
@@ -23,6 +25,26 @@ class PaymentApi
     public function __construct(Connector $connector)
     {
         $this->connector = $connector;
+    }
+
+    /**
+     * @return Account
+     */
+    public function getAccount()
+    {
+        $data = $this->connector->getJson('v1/ping');
+
+        return Account::fromResponse($data['data']);
+    }
+
+    /**
+     * @return Currency[]
+     */
+    public function getCurrencies()
+    {
+        $data = $this->connector->getJson('v1/currencies');
+
+        return Currency::fromResponse($data['data']);
     }
 
     /**

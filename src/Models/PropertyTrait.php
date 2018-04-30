@@ -16,8 +16,12 @@ trait PropertyTrait
             return $this->{$methodName}();
         }
 
-        if (property_exists($this, $name)) {
-            return $this->{$name};
+        if (array_key_exists($name, $this->properties)) {
+            return $this->properties[$name];
+        }
+
+        if (array_key_exists($name, $this->readonlyProperties)) {
+            return $this->readonlyProperties[$name];
         }
     }
 
@@ -34,28 +38,8 @@ trait PropertyTrait
             return;
         }
 
-        if (property_exists($this, $name)) {
-            $this->{$name} = $value;
-
-            return;
-        }
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     *
-     * @return mixed|void
-     */
-    public function __call($name, $arguments)
-    {
-        $mutator = substr($name, 0, 3);
-        if ($mutator === 'get') {
-            return $this->getProperty(lcfirst(substr($name, 3)));
-        }
-
-        if ($mutator === 'set') {
-            $this->setProperty(lcfirst(substr($name, 3)), $arguments[0]);
+        if (array_key_exists($name, $this->properties)) {
+            $this->properties[$name] = $value;
 
             return;
         }
