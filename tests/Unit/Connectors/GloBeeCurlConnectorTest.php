@@ -64,13 +64,6 @@ class GloBeeCurlConnectorTest extends TestCase
             'AnotherPlatform' => '4.5.6',
         ], $this->wrapperMock);
         $this->shouldReceiveSetOptions([
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/payment-api/test',
-            CURLOPT_ACCEPT_ENCODING => 'application/json',
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                'X-AUTH-KEY: 1234',
-            ],
             CURLOPT_USERAGENT => $this->getUserAgentString().' TestPlatform/1.2.3 AnotherPlatform/4.5.6',
         ])->once();
 
@@ -84,14 +77,7 @@ class GloBeeCurlConnectorTest extends TestCase
     {
         $connector = new GloBeeCurlConnector('1234', false, [], $this->wrapperMock);
         $this->shouldReceiveSetOptions([
-            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => 'https://test.globee.com/payment-api/test',
-            CURLOPT_ACCEPT_ENCODING => 'application/json',
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                'X-AUTH-KEY: 1234',
-            ],
-            CURLOPT_USERAGENT => $this->getUserAgentString(),
         ])->once();
 
         $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
