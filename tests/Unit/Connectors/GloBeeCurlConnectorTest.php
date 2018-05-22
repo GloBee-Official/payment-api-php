@@ -224,8 +224,10 @@ class GloBeeCurlConnectorTest extends TestCase
                 $diff += array_diff($options, $_options);
 
                 if (!empty($diff)) {
-                    echo 'Array not the same:';
+                    echo "\n-----\n\nArray not the same!\nExpected:\n";
                     print_r($diff);
+                    echo "Received:\n";
+                    print_r(array_diff($_headers, $headers) + array_diff($_options, $options));
 
                     return false;
                 }
