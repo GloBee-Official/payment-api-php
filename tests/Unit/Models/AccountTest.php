@@ -21,7 +21,7 @@ class AccountTest extends TestCase
     {
         $account = Account::fromResponse([
             'name' => 'TEST NAME',
-            'url' => 'https://example.com'
+            'url' => 'https://example.com',
         ]);
 
         $this->assertSame('TEST NAME', $account->name);

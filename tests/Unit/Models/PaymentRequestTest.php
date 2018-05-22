@@ -11,7 +11,6 @@ use GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException;
 use GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException;
 use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
 use GloBee\PaymentApi\Models\PaymentRequest;
-use GloBee\PaymentApi\PaymentApi;
 use Tests\TestCase;
 
 class PaymentRequestTest extends TestCase

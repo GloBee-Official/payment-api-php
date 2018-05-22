@@ -94,8 +94,8 @@ class PaymentApiTest extends TestCase
             'success' => true,
             'data' => [
                 'name' => 'TEST NAME',
-                'url' => 'https://example.com'
-            ]
+                'url' => 'https://example.com',
+            ],
         ]);
 
         $account = $this->paymentApi->getAccount();
@@ -123,7 +123,7 @@ class PaymentApiTest extends TestCase
                     'id' => 'XYZ',
                     'name' => 'Test XYZ',
                 ],
-            ]
+            ],
         ]);
 
         $currencies = $this->paymentApi->getCurrencies();
