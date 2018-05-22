@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Models;
 
+use GloBee\PaymentApi\Exceptions\LockedPropertyException;
+use GloBee\PaymentApi\Exceptions\UnknownPropertyException;
 use GloBee\PaymentApi\Exceptions\Validation\BelowMinimumException;
 use GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException;
 use GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException;
@@ -22,6 +24,48 @@ class PaymentRequestTest extends TestCase
     public function setUp()
     {
         $this->paymentRequest = new PaymentRequest();
+    }
+
+    public function test_getting_an_invalid_property_should_throw_exception()
+    {
+        try {
+            $this->paymentRequest->unknownProperty;
+        } catch (UnknownPropertyException $e) {
+            $this->addToAssertionCount(1);
+            $this->assertEquals('Unknown Property: unknownProperty', $e->getMessage());
+
+            return;
+        }
+
+        $this->fail('Expected UnknownPropertyException to be thrown');
+    }
+
+    public function test_setting_an_invalid_property_should_throw_exception()
+    {
+        try {
+            $this->paymentRequest->unknownProperty = 123;
+        } catch (UnknownPropertyException $e) {
+            $this->addToAssertionCount(1);
+            $this->assertEquals('Unknown Property: unknownProperty', $e->getMessage());
+
+            return;
+        }
+
+        $this->fail('Expected UnknownPropertyException to be thrown');
+    }
+
+    public function test_setting_a_locked_property_should_throw_exception()
+    {
+        try {
+            $this->paymentRequest->id = 123;
+        } catch (LockedPropertyException $e) {
+            $this->addToAssertionCount(1);
+            $this->assertEquals('Property "id" is locked and can\'t be modified.', $e->getMessage());
+
+            return;
+        }
+
+        $this->fail('Expected LockedPropertyException to be thrown');
     }
 
     public function test_can_set_valid_data_on_model_using_getters_and_setters()

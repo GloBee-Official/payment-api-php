@@ -2,12 +2,16 @@
 
 namespace GloBee\PaymentApi\Models;
 
+use GloBee\PaymentApi\Exceptions\LockedPropertyException;
+use GloBee\PaymentApi\Exceptions\UnknownPropertyException;
+
 trait PropertyTrait
 {
     /**
      * @param $name
      *
      * @return mixed
+     * @throws UnknownPropertyException
      */
     public function getProperty($name)
     {
@@ -23,11 +27,16 @@ trait PropertyTrait
         if (array_key_exists($name, $this->readonlyProperties)) {
             return $this->readonlyProperties[$name];
         }
+
+        throw new UnknownPropertyException($name);
     }
 
     /**
      * @param $name
      * @param $value
+     *
+     * @throws LockedPropertyException
+     * @throws UnknownPropertyException
      */
     protected function setProperty($name, $value)
     {
@@ -43,13 +52,32 @@ trait PropertyTrait
 
             return;
         }
+
+        if (array_key_exists($name, $this->readonlyProperties)) {
+            throw new LockedPropertyException($name);
+        }
+
+        throw new UnknownPropertyException($name);
     }
 
+    /**
+     * @param $name
+     *
+     * @return mixed
+     * @throws UnknownPropertyException
+     */
     public function __get($name)
     {
         return $this->getProperty($name);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     *
+     * @throws LockedPropertyException
+     * @throws UnknownPropertyException
+     */
     public function __set($name, $value)
     {
         $this->setProperty($name, $value);
