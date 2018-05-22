@@ -221,19 +221,26 @@ class GloBeeCurlConnectorTest extends TestCase
     {
         return $this->wrapperMock->shouldReceive('setOptions')
             ->with(\Mockery::on(function ($options) use ($_options) {
+                $diff = [];
                 // Extract Headers
                 $headers = $options[CURLOPT_HTTPHEADER];
-                $_headers = $_options[CURLOPT_HTTPHEADER];
-                unset($options[CURLOPT_HTTPHEADER], $_options[CURLOPT_HTTPHEADER]);
+                if (isset($_options[CURLOPT_HTTPHEADER])) {
+                    $_headers = $_options[CURLOPT_HTTPHEADER];
+                    unset($options[CURLOPT_HTTPHEADER], $_options[CURLOPT_HTTPHEADER]);
+                    $diff = array_diff($_headers, $headers);
+                }
 
-                $diff = array_diff($headers, $_headers);
-                $diff += array_diff($options, $_options);
+                $diff += array_diff($_options, $options);
 
                 if (!empty($diff)) {
                     echo "\n-----\n\nArray not the same!\nExpected:\n";
                     print_r($diff);
                     echo "Received:\n";
-                    print_r(array_diff($_headers, $headers) + array_diff($_options, $options));
+                    $received =  array_diff($options, $_options);
+                    if (isset($_headers)) {
+                        $received += array_diff($headers, $_headers);
+                    }
+                    print_r($received);
 
                     return false;
                 }
