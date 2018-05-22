@@ -225,20 +225,21 @@ class GloBeeCurlConnectorTest extends TestCase
                 $headers = $options[CURLOPT_HTTPHEADER];
                 if (isset($_options[CURLOPT_HTTPHEADER])) {
                     $_headers = $_options[CURLOPT_HTTPHEADER];
-                    unset($options[CURLOPT_HTTPHEADER], $_options[CURLOPT_HTTPHEADER]);
                     $diff = array_diff($_headers, $headers);
                 }
+                unset($options[CURLOPT_HTTPHEADER], $_options[CURLOPT_HTTPHEADER]);
 
-                $diff += array_diff($_options, $options);
+                $diff = array_replace($diff, array_diff($_options, $options));
 
                 if (!empty($diff)) {
                     echo "\n-----\n\nArray not the same!\nExpected:\n";
                     print_r($diff);
                     echo "Received:\n";
-                    $received =  array_diff($options, $_options);
+                    $received = [];
                     if (isset($_headers)) {
-                        $received += array_diff($headers, $_headers);
+                        $received = array_diff($headers, $_headers);
                     }
+                    $received = array_replace($received, array_diff($options, $_options));
                     print_r($received);
 
                     return false;
