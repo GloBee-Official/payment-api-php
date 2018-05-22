@@ -29,14 +29,14 @@ class GloBeeCurlConnectorTest extends TestCase
     public function setUp()
     {
         $this->wrapperMock = \Mockery::mock(CurlWrapper::class);
-        $this->connector = new GloBeeCurlConnector('1234', 'https://globee.com', [], $this->wrapperMock);
+        $this->connector = new GloBeeCurlConnector('1234', true, [], $this->wrapperMock);
     }
 
     public function test_can_get_data_from_request()
     {
         $this->shouldReceiveSetOptions([
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/test',
+            CURLOPT_URL => 'https://globee.com/payment-api/test',
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => [
@@ -59,7 +59,7 @@ class GloBeeCurlConnectorTest extends TestCase
         ], $this->wrapperMock);
         $this->shouldReceiveSetOptions([
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/test',
+            CURLOPT_URL => 'https://globee.com/payment-api/test',
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => [
@@ -74,11 +74,31 @@ class GloBeeCurlConnectorTest extends TestCase
         $this->assertSame('OK', $connector->getJson('test'));
     }
 
+    public function test_using_testnet_system()
+    {
+        $connector = new GloBeeCurlConnector('1234', false, [], $this->wrapperMock);
+        $this->shouldReceiveSetOptions([
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => 'https://test.globee.com/payment-api/test',
+            CURLOPT_ACCEPT_ENCODING => 'application/json',
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                'X-AUTH-KEY: 1234',
+            ],
+            CURLOPT_USERAGENT => $this->getUserAgentString(),
+        ])->once();
+
+        $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
+        $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
+
+        $this->assertSame('OK', $connector->getJson('test'));
+    }
+
     public function test_can_post_data()
     {
         $this->shouldReceiveSetOptions([
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/postTest',
+            CURLOPT_URL => 'https://globee.com/payment-api/postTest',
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => [
