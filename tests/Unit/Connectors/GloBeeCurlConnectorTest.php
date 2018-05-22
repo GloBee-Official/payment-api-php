@@ -201,6 +201,19 @@ class GloBeeCurlConnectorTest extends TestCase
         }
     }
 
+    public function test_can_set_custom_domain_name()
+    {
+        $this->connector->setBaseUrl('https://example.com');
+        $this->shouldReceiveSetOptions([
+            CURLOPT_URL => 'https://example.com/test',
+        ])->once();
+
+        $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
+        $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
+
+        $this->assertSame('OK', $this->connector->getJson('test'));
+    }
+
     /**
      * @param int    $httpCode
      * @param string $httpBody

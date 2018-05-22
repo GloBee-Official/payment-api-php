@@ -132,4 +132,12 @@ class GloBeeCurlConnector extends Connector
 
         return trim($userAgent.' '.$platforms);
     }
+
+    /**
+     * @param string $url
+     */
+    public function setBaseUrl($url)
+    {
+        $this->baseUrl = $url;
+    }
 }
