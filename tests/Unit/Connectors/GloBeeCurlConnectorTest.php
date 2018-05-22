@@ -32,6 +32,12 @@ class GloBeeCurlConnectorTest extends TestCase
         $this->connector = new GloBeeCurlConnector('1234', true, [], $this->wrapperMock);
     }
 
+    public function test_can_instantiate_with_only_api_key()
+    {
+        $connector = new GloBeeCurlConnector('1234');
+        $this->assertInstanceOf(GloBeeCurlConnector::class, $connector);
+    }
+
     public function test_can_get_data_from_request()
     {
         $this->shouldReceiveSetOptions([

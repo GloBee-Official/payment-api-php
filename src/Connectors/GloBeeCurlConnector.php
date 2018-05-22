@@ -34,7 +34,7 @@ class GloBeeCurlConnector extends Connector
      * @param array            $platforms
      * @param CurlWrapper|null $curlConnector
      */
-    public function __construct($apiKey, $live = true, array $platforms, CurlWrapper $curlConnector = null)
+    public function __construct($apiKey, $live = true, array $platforms = [], CurlWrapper $curlConnector = null)
     {
         $this->apiKey = $apiKey;
         $this->baseUrl = $live ? 'https://globee.com/payment-api' : 'https://test.globee.com/payment-api';
