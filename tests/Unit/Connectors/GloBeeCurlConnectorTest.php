@@ -29,14 +29,20 @@ class GloBeeCurlConnectorTest extends TestCase
     public function setUp()
     {
         $this->wrapperMock = \Mockery::mock(CurlWrapper::class);
-        $this->connector = new GloBeeCurlConnector('1234', 'https://globee.com', [], $this->wrapperMock);
+        $this->connector = new GloBeeCurlConnector('1234', true, [], $this->wrapperMock);
+    }
+
+    public function test_can_instantiate_with_only_api_key()
+    {
+        $connector = new GloBeeCurlConnector('1234');
+        $this->assertInstanceOf(GloBeeCurlConnector::class, $connector);
     }
 
     public function test_can_get_data_from_request()
     {
         $this->shouldReceiveSetOptions([
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/test',
+            CURLOPT_URL => 'https://globee.com/payment-api/test',
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => [
@@ -58,14 +64,20 @@ class GloBeeCurlConnectorTest extends TestCase
             'AnotherPlatform' => '4.5.6',
         ], $this->wrapperMock);
         $this->shouldReceiveSetOptions([
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/test',
-            CURLOPT_ACCEPT_ENCODING => 'application/json',
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                'X-AUTH-KEY: 1234',
-            ],
             CURLOPT_USERAGENT => $this->getUserAgentString().' TestPlatform/1.2.3 AnotherPlatform/4.5.6',
+        ])->once();
+
+        $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
+        $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
+
+        $this->assertSame('OK', $connector->getJson('test'));
+    }
+
+    public function test_using_testnet_system()
+    {
+        $connector = new GloBeeCurlConnector('1234', false, [], $this->wrapperMock);
+        $this->shouldReceiveSetOptions([
+            CURLOPT_URL => 'https://test.globee.com/payment-api/test',
         ])->once();
 
         $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
@@ -78,7 +90,7 @@ class GloBeeCurlConnectorTest extends TestCase
     {
         $this->shouldReceiveSetOptions([
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => 'https://globee.com/postTest',
+            CURLOPT_URL => 'https://globee.com/payment-api/postTest',
             CURLOPT_ACCEPT_ENCODING => 'application/json',
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => [
@@ -175,6 +187,19 @@ class GloBeeCurlConnectorTest extends TestCase
         }
     }
 
+    public function test_can_set_custom_domain_name()
+    {
+        $this->connector->setBaseUrl('https://example.com');
+        $this->shouldReceiveSetOptions([
+            CURLOPT_URL => 'https://example.com/test',
+        ])->once();
+
+        $this->wrapperMock->shouldReceive('exec')->andReturn('"OK"')->once();
+        $this->wrapperMock->shouldReceive('getInfo')->withArgs([CURLINFO_HTTP_CODE])->andReturn(200);
+
+        $this->assertSame('OK', $this->connector->getJson('test'));
+    }
+
     /**
      * @param int    $httpCode
      * @param string $httpBody
@@ -195,17 +220,27 @@ class GloBeeCurlConnectorTest extends TestCase
     {
         return $this->wrapperMock->shouldReceive('setOptions')
             ->with(\Mockery::on(function ($options) use ($_options) {
+                $diff = [];
                 // Extract Headers
                 $headers = $options[CURLOPT_HTTPHEADER];
-                $_headers = $_options[CURLOPT_HTTPHEADER];
+                if (isset($_options[CURLOPT_HTTPHEADER])) {
+                    $_headers = $_options[CURLOPT_HTTPHEADER];
+                    $diff = array_diff($_headers, $headers);
+                }
                 unset($options[CURLOPT_HTTPHEADER], $_options[CURLOPT_HTTPHEADER]);
 
-                $diff = array_diff($headers, $_headers);
-                $diff += array_diff($options, $_options);
+                $diff = array_replace($diff, array_diff($_options, $options));
 
                 if (!empty($diff)) {
-                    echo 'Array not the same:';
+                    echo "\n-----\n\nArray not the same!\nExpected:\n";
                     print_r($diff);
+                    echo "Received:\n";
+                    $received = [];
+                    if (isset($_headers)) {
+                        $received = array_diff($headers, $_headers);
+                    }
+                    $received = array_replace($received, array_diff($options, $_options));
+                    print_r($received);
 
                     return false;
                 }

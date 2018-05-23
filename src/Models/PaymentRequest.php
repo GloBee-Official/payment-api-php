@@ -34,7 +34,7 @@ class PaymentRequest extends Model
         'successUrl' => null,
         'cancelUrl' => null,
         'ipnUrl' => null,
-        'notificationUrl' => null,
+        'notificationEmail' => null,
         'confirmationSpeed' => 'medium',
     ];
 
