@@ -2,9 +2,10 @@
 [![Build Status](https://travis-ci.org/GloBee-Official/payment-api-php.svg?branch=master)](https://travis-ci.org/GloBee-Official/payment-api-php)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/GloBee-Official/payment-api-php/?branch=master)
+[![Latest Stable Version](https://img.shields.io/packagist/v/globee/payment-api.svg)](https://packagist.org/packages/globee/payment-api)
 
 This is a library to integrate your system with the GloBee Payment API
-to manage and accept crypto payments on through our system.
+to manage and accept crypto payments through our system.
 
 ## Installation with Composer
 Run the following command in your project to add this package:
@@ -15,8 +16,7 @@ composer require globee/payment-api
 ## Authenticate with GloBee
 To receive a valid X-AUTH-ID, complete the following steps:
 1) Sign into GloBee, and navigate to the Payment API section on the backend panel.
-2) Click on the "Add New Key" button, complete the "Label" field and click "Create Key".
-3) Copy the key created and store it somewhere in your code.
+2) Copy the "Payment API Key" and store it somewhere in your code.
 
 ## Usage Example
 To create an invoice on GloBee and receive a redirect to a payment interstitial, you can copy and modify the below code.
@@ -26,9 +26,7 @@ To create an invoice on GloBee and receive a redirect to a payment interstitial,
 
 include 'vendor/autoload.php';
 
-$connector = new \GloBee\PaymentApi\Connectors\GloBeeCurlConnector(
-    'YOUR_UNIQUE_API_KEY'
-);
+$connector = new \GloBee\PaymentApi\Connectors\GloBeeCurlConnector('YOUR_UNIQUE_API_KEY');
 $paymentApi = new \GloBee\PaymentApi\PaymentApi($connector);
 
 $paymentRequest = new \GloBee\PaymentApi\Models\PaymentRequest();
