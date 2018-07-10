@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Exceptions;
 
-use GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException;
 use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
 use Tests\TestCase;
 

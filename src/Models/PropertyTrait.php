@@ -2,12 +2,16 @@
 
 namespace GloBee\PaymentApi\Models;
 
+use GloBee\PaymentApi\Exceptions\LockedPropertyException;
+use GloBee\PaymentApi\Exceptions\UnknownPropertyException;
+
 trait PropertyTrait
 {
     /**
      * @param $name
      *
      * @return mixed
+     * @throws UnknownPropertyException
      */
     public function getProperty($name)
     {
@@ -16,14 +20,23 @@ trait PropertyTrait
             return $this->{$methodName}();
         }
 
-        if (property_exists($this, $name)) {
-            return $this->{$name};
+        if (array_key_exists($name, $this->properties)) {
+            return $this->properties[$name];
         }
+
+        if (array_key_exists($name, $this->readonlyProperties)) {
+            return $this->readonlyProperties[$name];
+        }
+
+        throw new UnknownPropertyException($name);
     }
 
     /**
      * @param $name
      * @param $value
+     *
+     * @throws LockedPropertyException
+     * @throws UnknownPropertyException
      */
     protected function setProperty($name, $value)
     {
@@ -34,38 +47,37 @@ trait PropertyTrait
             return;
         }
 
-        if (property_exists($this, $name)) {
-            $this->{$name} = $value;
+        if (array_key_exists($name, $this->properties)) {
+            $this->properties[$name] = $value;
 
             return;
         }
+
+        if (array_key_exists($name, $this->readonlyProperties)) {
+            throw new LockedPropertyException($name);
+        }
+
+        throw new UnknownPropertyException($name);
     }
 
     /**
      * @param $name
-     * @param $arguments
      *
-     * @return mixed|void
+     * @return mixed
+     * @throws UnknownPropertyException
      */
-    public function __call($name, $arguments)
-    {
-        $mutator = substr($name, 0, 3);
-        if ($mutator === 'get') {
-            return $this->getProperty(lcfirst(substr($name, 3)));
-        }
-
-        if ($mutator === 'set') {
-            $this->setProperty(lcfirst(substr($name, 3)), $arguments[0]);
-
-            return;
-        }
-    }
-
     public function __get($name)
     {
         return $this->getProperty($name);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     *
+     * @throws LockedPropertyException
+     * @throws UnknownPropertyException
+     */
     public function __set($name, $value)
     {
         $this->setProperty($name, $value);

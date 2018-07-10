@@ -22,87 +22,29 @@ namespace GloBee\PaymentApi\Models;
  */
 class PaymentRequest extends Model
 {
-    use PropertyTrait;
+    use ValidationTrait;
 
-    /**
-     * @var float
-     */
-    protected $total = 0.0;
+    protected $properties = [
+        'total' => 0.0,
+        'currency' => 'USD',
+        'customPaymentId' => null,
+        'callbackData' => null,
+        'customerName' => null,
+        'customerEmail' => null,
+        'successUrl' => null,
+        'cancelUrl' => null,
+        'ipnUrl' => null,
+        'notificationEmail' => null,
+        'confirmationSpeed' => 'medium',
+    ];
 
-    /**
-     * @var string
-     */
-    protected $currency = 'USD';
-
-    /**
-     * @var string
-     */
-    protected $customPaymentId;
-
-    /**
-     * @var string|array
-     */
-    protected $callbackData;
-
-    /**
-     * @var string
-     */
-    protected $customerName;
-
-    /**
-     * @var string
-     */
-    protected $customerEmail;
-
-    /**
-     * @var string
-     */
-    protected $successUrl;
-
-    /**
-     * @var string
-     */
-    protected $cancelUrl;
-
-    /**
-     * @var string
-     */
-    protected $ipnUrl;
-
-    /**
-     * @var string
-     */
-    protected $notificationEmail;
-
-    /**
-     * @var string
-     */
-    protected $confirmationSpeed = 'medium';
-
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $status;
-
-    /**
-     * @var string
-     */
-    private $redirectUrl;
-
-    /**
-     * @var string
-     */
-    private $expiresAt;
-
-    /**
-     * @var string
-     */
-    private $createdAt;
+    protected $readonlyProperties = [
+        'id' => null,
+        'status' => null,
+        'redirectUrl' => null,
+        'expiresAt' => null,
+        'createdAt' => null,
+    ];
 
     /**
      * @param array $data
@@ -117,22 +59,22 @@ class PaymentRequest extends Model
         if (json_last_error() !== JSON_ERROR_NONE) {
             $callbackData = $data['callback_data'];
         }
-        $self->id = $data['id'];
-        $self->status = $data['status'];
-        $self->total = $data['total'];
-        $self->currency = $data['currency'];
-        $self->customPaymentId = $data['custom_payment_id'];
-        $self->callbackData = $callbackData;
-        $self->customerName = $data['customer']['name'];
-        $self->customerEmail = $data['customer']['email'];
-        $self->redirectUrl = $data['redirect_url'];
-        $self->successUrl = $data['success_url'];
-        $self->cancelUrl = $data['cancel_url'];
-        $self->ipnUrl = $data['ipn_url'];
-        $self->notificationEmail = $data['notification_email'];
-        $self->confirmationSpeed = $data['confirmation_speed'];
-        $self->expiresAt = $data['expires_at'];
-        $self->createdAt = $data['created_at'];
+        $self->readonlyProperties['id'] = $data['id'];
+        $self->readonlyProperties['status'] = $data['status'];
+        $self->properties['total'] = $data['total'];
+        $self->properties['currency'] = $data['currency'];
+        $self->properties['customPaymentId'] = $data['custom_payment_id'];
+        $self->properties['callbackData'] = $callbackData;
+        $self->properties['customerName'] = $data['customer']['name'];
+        $self->properties['customerEmail'] = $data['customer']['email'];
+        $self->readonlyProperties['redirectUrl'] = $data['redirect_url'];
+        $self->properties['successUrl'] = $data['success_url'];
+        $self->properties['cancelUrl'] = $data['cancel_url'];
+        $self->properties['ipnUrl'] = $data['ipn_url'];
+        $self->properties['notificationEmail'] = $data['notification_email'];
+        $self->properties['confirmationSpeed'] = $data['confirmation_speed'];
+        $self->readonlyProperties['expiresAt'] = $data['expires_at'];
+        $self->readonlyProperties['createdAt'] = $data['created_at'];
 
         return $self;
     }
@@ -143,10 +85,10 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\BelowMinimumException
      */
-    public function setTotal($total)
+    protected function setTotal($total)
     {
         $this->validateNumberAboveMinimum('total', $total, 0);
-        $this->total = $total;
+        $this->properties['total'] = $total;
     }
 
     /**
@@ -155,10 +97,10 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    public function setCurrency($currency)
+    protected function setCurrency($currency)
     {
         $this->validateStringLength('currency', $currency, 3);
-        $this->currency = strtoupper($currency);
+        $this->properties['currency'] = strtoupper($currency);
     }
 
     /**
@@ -167,10 +109,10 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
      */
-    public function setCustomerEmail($customerEmail)
+    protected function setCustomerEmail($customerEmail)
     {
         $this->validateEmail('customer.email', $customerEmail);
-        $this->customerEmail = $customerEmail;
+        $this->properties['customerEmail'] = $customerEmail;
     }
 
     /**
@@ -179,45 +121,45 @@ class PaymentRequest extends Model
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException
      */
-    public function setSuccessUrl($successUrl)
+    protected function setSuccessUrl($successUrl)
     {
         if ($successUrl !== null) {
             $this->validateUrl('success_url', $successUrl);
         }
-        $this->successUrl = $successUrl;
+        $this->properties['successUrl'] = $successUrl;
     }
 
     /**
      * @param mixed $cancelUrl
      */
-    public function setCancelUrl($cancelUrl)
+    protected function setCancelUrl($cancelUrl)
     {
         if ($cancelUrl !== null) {
             $this->validateUrl('cancel_url', $cancelUrl);
         }
-        $this->cancelUrl = $cancelUrl;
+        $this->properties['cancelUrl'] = $cancelUrl;
     }
 
     /**
      * @param mixed $ipnUrl
      */
-    public function setIpnUrl($ipnUrl)
+    protected function setIpnUrl($ipnUrl)
     {
         if ($ipnUrl !== null) {
             $this->validateUrl('ipn_url', $ipnUrl);
         }
-        $this->ipnUrl = $ipnUrl;
+        $this->properties['ipnUrl'] = $ipnUrl;
     }
 
     /**
      * @param mixed $notificationEmail
      */
-    public function setNotificationEmail($notificationEmail)
+    protected function setNotificationEmail($notificationEmail)
     {
         if ($notificationEmail !== null) {
             $this->validateEmail('notification_email', $notificationEmail);
         }
-        $this->notificationEmail = $notificationEmail;
+        $this->properties['notificationEmail'] = $notificationEmail;
     }
 
     /**
@@ -225,10 +167,10 @@ class PaymentRequest extends Model
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException
      */
-    public function setConfirmationSpeed($confirmationSpeed)
+    protected function setConfirmationSpeed($confirmationSpeed)
     {
         $this->validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
-        $this->confirmationSpeed = $confirmationSpeed;
+        $this->properties['confirmationSpeed'] = $confirmationSpeed;
     }
 
     /**

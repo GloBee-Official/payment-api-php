@@ -30,14 +30,14 @@ class GloBeeCurlConnector extends Connector
      * GloBeeCurlConnector constructor.
      *
      * @param string           $apiKey
-     * @param string           $baseUrl
+     * @param bool             $live
      * @param array            $platforms
      * @param CurlWrapper|null $curlConnector
      */
-    public function __construct($apiKey, $baseUrl = null, array $platforms, CurlWrapper $curlConnector = null)
+    public function __construct($apiKey, $live = true, array $platforms = [], CurlWrapper $curlConnector = null)
     {
         $this->apiKey = $apiKey;
-        $this->baseUrl = $baseUrl ?: 'https://globee.com/payment-api';
+        $this->baseUrl = $live ? 'https://globee.com/payment-api' : 'https://test.globee.com/payment-api';
         $this->platforms = $platforms;
         $this->client = $curlConnector ?: new CurlWrapper();
     }
@@ -131,5 +131,13 @@ class GloBeeCurlConnector extends Connector
         $userAgent = sprintf('GloBeePaymentSdk/%s (%s) PHP/%s', PaymentApi::VERSION, PHP_OS, PHP_VERSION);
 
         return trim($userAgent.' '.$platforms);
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setBaseUrl($url)
+    {
+        $this->baseUrl = $url;
     }
 }
