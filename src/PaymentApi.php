@@ -67,7 +67,7 @@ class PaymentApi
      */
     public function createPaymentRequest(PaymentRequest $paymentRequest)
     {
-        if ($paymentRequest->exists()) {
+        if ($paymentRequest->id !== null) {
             throw new PaymentRequestAlreadyExistsException();
         }
         $data = $this->filterData($paymentRequest->toArray());

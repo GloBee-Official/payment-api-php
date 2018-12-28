@@ -345,11 +345,4 @@ class PaymentRequestTest extends TestCase
 
         $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
     }
-
-    public function test_exists_return_true_for_payment_request_from_response()
-    {
-        $paymentRequest = PaymentRequest::fromResponse($this->getValidPaymentRequestResponse()['data']);
-
-        $this->assertTrue($paymentRequest->exists());
-    }
 }
