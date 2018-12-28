@@ -5,10 +5,14 @@ namespace GloBee\PaymentApi\Models;
 class Currency extends Model
 {
 
-    protected $readonlyProperties = [
-        'id' => null,
-        'name' => null,
-    ];
+    protected $id;
+    protected $name;
+
+    public function __construct($id, $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
 
     /**
      * @param array $data
@@ -20,9 +24,7 @@ class Currency extends Model
         $currencies = [];
 
         foreach ($data as $currency) {
-            $self = new self();
-            $self->properties['id'] = $currency['id'];
-            $self->properties['name'] = $currency['name'];
+            $self = new self($currency['id'], $currency['name']);
 
             $currencies[] = $self;
         }
