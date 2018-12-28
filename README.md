@@ -29,10 +29,7 @@ include 'vendor/autoload.php';
 $connector = new \GloBee\PaymentApi\Connectors\GloBeeCurlConnector('YOUR_UNIQUE_API_KEY');
 $paymentApi = new \GloBee\PaymentApi\PaymentApi($connector);
 
-$paymentRequest = new \GloBee\PaymentApi\Models\PaymentRequest();
-
-$paymentRequest->total = 123.45;
-$paymentRequest->customerEmail = 'example@email.com';
+$paymentRequest = new \GloBee\PaymentApi\Models\PaymentRequest(123.45, 'example@email.com');
 
 $response = $paymentApi->createPaymentRequest($paymentRequest);
 
