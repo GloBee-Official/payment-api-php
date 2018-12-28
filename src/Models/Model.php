@@ -2,11 +2,22 @@
 
 namespace GloBee\PaymentApi\Models;
 
+use GloBee\PaymentApi\Exceptions\UnknownPropertyException;
+
 abstract class Model
 {
-    use PropertyTrait;
+    /**
+     * @param $name
+     *
+     * @return mixed
+     * @throws UnknownPropertyException
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
 
-    protected $properties = [];
-
-    protected $readonlyProperties = [];
+        throw new UnknownPropertyException($name);
+    }
 }

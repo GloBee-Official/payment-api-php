@@ -9,14 +9,14 @@ use GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException;
 use GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException;
 use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
 
-trait ValidationTrait
+class Validator
 {
     /**
      * @param $string
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    protected function validateString($field, $string)
+    public static function validateString($field, $string)
     {
         if (!is_string($string)) {
             throw new InvalidArgumentException($field, 'string', $string);
@@ -29,9 +29,9 @@ trait ValidationTrait
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
      */
-    protected function validateEmail($field, $customerEmail)
+    public static function validateEmail($field, $customerEmail)
     {
-        $this->validateString($field, $customerEmail);
+        self::validateString($field, $customerEmail);
         if (filter_var($customerEmail, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidEmailException($field, $customerEmail);
         }
@@ -44,9 +44,9 @@ trait ValidationTrait
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
      */
-    protected function validateStringLength($field, $string, $length)
+    public static function validateStringLength($field, $string, $length)
     {
-        $this->validateString($field, $string);
+        self::validateString($field, $string);
         if (strlen($string) !== $length) {
             throw new ValidationException([], 'Currency must be a 3 character string.');
         }
@@ -57,7 +57,7 @@ trait ValidationTrait
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    protected function validateNumeric($field, $value)
+    public static function validateNumeric($field, $value)
     {
         if (!is_numeric($value)) {
             throw new InvalidArgumentException($field, 'number', gettype($value));
@@ -72,9 +72,9 @@ trait ValidationTrait
      * @throws \GloBee\PaymentApi\Exceptions\Validation\BelowMinimumException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    protected function validateNumberAboveMinimum($field, $value, $minimum)
+    public static function validateNumberAboveMinimum($field, $value, $minimum)
     {
-        $this->validateNumeric($field, $value);
+        self::validateNumeric($field, $value);
         if ($value <= $minimum) {
             throw new BelowMinimumException($field, $value, $minimum);
         }
@@ -87,21 +87,22 @@ trait ValidationTrait
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
-    protected function validateUrl($field, $url)
+    public static function validateUrl($field, $url)
     {
-        $this->validateString($field, $url);
+        self::validateString($field, $url);
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
             throw new InvalidUrlException($field, $url);
         }
     }
 
     /**
+     * @param $field
      * @param $value
      * @param $validOptions
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException
      */
-    protected function validateOptions($field, $value, $validOptions)
+    public static function validateOptions($field, $value, $validOptions)
     {
         if (!in_array($value, $validOptions, true)) {
             throw new InvalidSelectionException($field, $value, $validOptions);
