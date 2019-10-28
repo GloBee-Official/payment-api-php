@@ -22,7 +22,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_getting_an_invalid_property_should_throw_exception()
     {
-        $paymentRequest = new PaymentRequest(1, 'test@example.com');
+        $paymentRequest = new PaymentRequest('test@example.com', 1);
         try {
             $paymentRequest->unknownProperty;
         } catch (UnknownPropertyException $e) {
@@ -37,7 +37,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_can_set_valid_data_on_model_using_getters_and_setters()
     {
-        $paymentRequest = PaymentRequest::create(100, 'ABC', 'customer@email.com', 'Test Name')
+        $paymentRequest = (new PaymentRequest('customer@email.com', 100, 'ABC', 'Test Name'))
             ->withCustomPaymentId('test_id')
             ->withCallbackData('test_callback_data')
             ->withSuccessUrl('https://www.example.com/success')
@@ -61,7 +61,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_can_set_valid_data_on_model_using_properties()
     {
-        $paymentRequest = PaymentRequest::create(98765.4321, 'DEF', 'customer@email.com', 'Test Name')
+        $paymentRequest = (new PaymentRequest('customer@email.com', 98765.4321, 'DEF', 'Test Name'))
             ->withCustomPaymentId('custom_payment_id')
             ->withCallbackData('test callback data')
             ->withSuccessUrl('https://www.example.com/success')
@@ -85,7 +85,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_sensible_defaults()
     {
-        $paymentRequest = new PaymentRequest(1, 'client@example.com');
+        $paymentRequest = new PaymentRequest('client@example.com', 1);
         $this->assertSame('USD', $paymentRequest->currency);
         $this->assertSame('medium', $paymentRequest->confirmationSpeed);
         $this->assertNull($paymentRequest->customPaymentId);
@@ -100,7 +100,7 @@ class PaymentRequestTest extends TestCase
     public function test_should_throw_exception_if_total_is_not_more_than_zero()
     {
         try {
-            new PaymentRequest(0, 'client@example.com');
+            new PaymentRequest('client@example.com', 0);
 
             $this->fail('Expected BelowMinimumException to be thrown');
         } catch (BelowMinimumException $e) {
@@ -113,7 +113,7 @@ class PaymentRequestTest extends TestCase
     public function test_should_throw_exception_if_total_is_not_a_number()
     {
         try {
-            new PaymentRequest('', 'client@example.com');
+            new PaymentRequest('client@example.com', '');
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -125,7 +125,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_currency_should_always_be_uppercase()
     {
-        $paymentRequest = PaymentRequest::create(1, 'abc', 'client@example.com');
+        $paymentRequest = new PaymentRequest('client@example.com', 1, 'abc');
 
         $this->assertSame('ABC', $paymentRequest->currency);
     }
@@ -133,7 +133,7 @@ class PaymentRequestTest extends TestCase
     public function test_currency_should_throw_exception_if_not_a_string()
     {
         try {
-            $paymentRequest = PaymentRequest::create(1, [], 'client@example.com');
+            $paymentRequest = new PaymentRequest('client@example.com', 1, []);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -146,7 +146,7 @@ class PaymentRequestTest extends TestCase
     public function test_currency_should_throw_exception_if_not_a_3_character_string()
     {
         try {
-            $paymentRequest = PaymentRequest::create(1, '', 'client@example.com');
+            $paymentRequest = new PaymentRequest('client@example.com', 1, '');
 
             $this->fail('Expected ValidationException to be thrown');
         } catch (ValidationException $e) {
@@ -159,7 +159,7 @@ class PaymentRequestTest extends TestCase
     public function test_customer_email_should_be_a_valid_email()
     {
         try {
-            PaymentRequest::create(1, 'ABC', []);
+            new PaymentRequest([], 1, 'ABC');
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -169,7 +169,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            PaymentRequest::create(1, 'ABC', 'invalid_email');
+            new PaymentRequest('invalid_email', 1, 'ABC');
 
             $this->fail('Expected InvalidEmailException to be thrown');
         } catch (InvalidEmailException $e) {
@@ -182,7 +182,7 @@ class PaymentRequestTest extends TestCase
     public function test_notification_email_should_be_a_valid_email()
     {
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withNotificationEmail([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
@@ -193,7 +193,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withNotificationEmail('invalid_email');
 
             $this->fail('Expected InvalidEmailException to be thrown');
@@ -207,7 +207,7 @@ class PaymentRequestTest extends TestCase
     public function test_success_url_should_be_a_valid_url()
     {
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withSuccessUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
@@ -218,7 +218,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withSuccessUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
@@ -232,7 +232,7 @@ class PaymentRequestTest extends TestCase
     public function test_cancel_url_should_be_a_valid_url()
     {
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withCancelUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
@@ -243,7 +243,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withCancelUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
@@ -257,7 +257,7 @@ class PaymentRequestTest extends TestCase
     public function test_ipn_url_should_be_a_valid_url()
     {
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withIpnUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
@@ -268,7 +268,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->withIpnUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
@@ -282,7 +282,7 @@ class PaymentRequestTest extends TestCase
     public function test_should_throw_exception_for_invalid_confirmation_speed()
     {
         try {
-            PaymentRequest::create(1, 'ABC', 'client@example.com')
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
                 ->confirmationSpeed('invalid_speed');
 
             $this->fail('Expected InvalidSelectionException to be thrown');
@@ -328,7 +328,7 @@ class PaymentRequestTest extends TestCase
 
     public function test_callback_data_should_be_stored_as_json()
     {
-        $paymentRequest = PaymentRequest::create(1, 'ABC', 'client@example.com')
+        $paymentRequest = (new PaymentRequest('client@example.com', 1, 'ABC'))
             ->withCallbackData(['key' => 'value']);
 
         $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
