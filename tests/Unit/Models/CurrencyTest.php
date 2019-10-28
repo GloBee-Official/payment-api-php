@@ -13,7 +13,7 @@ class CurrencyTest extends TestCase
      */
     private $account;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->account = new Currency();
     }

@@ -20,7 +20,7 @@ class PaymentRequestTest extends TestCase
      */
     private $paymentRequest;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->paymentRequest = new PaymentRequest();
     }

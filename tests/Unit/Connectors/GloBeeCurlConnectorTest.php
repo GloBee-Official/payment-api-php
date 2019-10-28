@@ -26,7 +26,7 @@ class GloBeeCurlConnectorTest extends TestCase
      */
     private $connector;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->wrapperMock = \Mockery::mock(CurlWrapper::class);
         $this->connector = new GloBeeCurlConnector('1234', true, [], $this->wrapperMock);

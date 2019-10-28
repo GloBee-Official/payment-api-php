@@ -24,7 +24,7 @@ class PaymentApiTest extends TestCase
      */
     private $paymentApi;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->connector = \Mockery::mock(Connector::class);
         $this->paymentApi = new PaymentApi($this->connector);
