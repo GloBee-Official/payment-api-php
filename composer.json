@@ -29,7 +29,7 @@
         "php": ">=5.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "@stable",
+        "phpunit/phpunit": "7.1.*",
         "mockery/mockery": "0.9.9|^1.0"
     },
     "autoload": {
