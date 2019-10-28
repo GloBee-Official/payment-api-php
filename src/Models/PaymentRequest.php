@@ -74,7 +74,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $currency
+     * @param string $currency
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
@@ -86,7 +86,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $customerEmail
+     * @param string $customerEmail
      * @param string|null $customerName
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
@@ -100,7 +100,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $successUrl
+     * @param string $successUrl
      *
      * @return self
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
@@ -118,7 +118,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $cancelUrl
+     * @param string $cancelUrl
      *
      * @return self
      */
@@ -168,7 +168,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $customPaymentId
+     * @param string $customPaymentId
      *
      * @return self
      */
@@ -181,7 +181,7 @@ class PaymentRequest extends Model
     }
 
     /**
-     * @param mixed $notificationEmail
+     * @param string $notificationEmail
      *
      * @return self
      */
