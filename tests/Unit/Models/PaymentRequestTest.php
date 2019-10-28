@@ -20,15 +20,11 @@ class PaymentRequestTest extends TestCase
      */
     private $paymentRequest;
 
-    public function setUp()
-    {
-        $this->paymentRequest = new PaymentRequest();
-    }
-
     public function test_getting_an_invalid_property_should_throw_exception()
     {
+        $paymentRequest = new PaymentRequest('test@example.com', 1);
         try {
-            $this->paymentRequest->unknownProperty;
+            $paymentRequest->unknownProperty;
         } catch (UnknownPropertyException $e) {
             $this->addToAssertionCount(1);
             $this->assertEquals('Unknown Property: unknownProperty', $e->getMessage());
@@ -37,128 +33,74 @@ class PaymentRequestTest extends TestCase
         }
 
         $this->fail('Expected UnknownPropertyException to be thrown');
-    }
-
-    public function test_setting_an_invalid_property_should_throw_exception()
-    {
-        try {
-            $this->paymentRequest->unknownProperty = 123;
-        } catch (UnknownPropertyException $e) {
-            $this->addToAssertionCount(1);
-            $this->assertEquals('Unknown Property: unknownProperty', $e->getMessage());
-
-            return;
-        }
-
-        $this->fail('Expected UnknownPropertyException to be thrown');
-    }
-
-    public function test_setting_a_locked_property_should_throw_exception()
-    {
-        try {
-            $this->paymentRequest->id = 123;
-        } catch (LockedPropertyException $e) {
-            $this->addToAssertionCount(1);
-            $this->assertEquals('Property "id" is locked and can\'t be modified.', $e->getMessage());
-
-            return;
-        }
-
-        $this->fail('Expected LockedPropertyException to be thrown');
     }
 
     public function test_can_set_valid_data_on_model_using_getters_and_setters()
     {
-        $this->paymentRequest->total = 100;
-        $this->paymentRequest->currency = 'ABC';
-        $this->paymentRequest->customPaymentId = 'test_id';
-        $this->paymentRequest->callbackData = 'test_callback_data';
-        $this->paymentRequest->customerName = 'Test Name';
-        $this->paymentRequest->customerEmail = 'customer@email.com';
-        $this->paymentRequest->successUrl = 'https://www.example.com/success';
-        $this->paymentRequest->cancelUrl = 'https://www.example.com/cancel';
-        $this->paymentRequest->ipnUrl = 'https://www.example.com/ipn';
-        $this->paymentRequest->notificationEmail = 'notification@email.com';
-        $this->paymentRequest->confirmationSpeed = 'low';
+        $paymentRequest = (new PaymentRequest('customer@email.com', 100, 'ABC', 'Test Name'))
+            ->withCustomPaymentId('test_id')
+            ->withCallbackData('test_callback_data')
+            ->withSuccessUrl('https://www.example.com/success')
+            ->withCancelUrl('https://www.example.com/cancel')
+            ->withIpnUrl('https://www.example.com/ipn')
+            ->withNotificationEmail('notification@email.com')
+            ->lowRiskConfirmation();
 
-        $this->assertEquals(100, $this->paymentRequest->total);
-        $this->assertEquals('ABC', $this->paymentRequest->currency);
-        $this->assertEquals('test_id', $this->paymentRequest->customPaymentId);
-        $this->assertEquals('test_callback_data', $this->paymentRequest->callbackData);
-        $this->assertEquals('Test Name', $this->paymentRequest->customerName);
-        $this->assertEquals('customer@email.com', $this->paymentRequest->customerEmail);
-        $this->assertEquals('https://www.example.com/success', $this->paymentRequest->successUrl);
-        $this->assertEquals('https://www.example.com/cancel', $this->paymentRequest->cancelUrl);
-        $this->assertEquals('https://www.example.com/ipn', $this->paymentRequest->ipnUrl);
-        $this->assertEquals('notification@email.com', $this->paymentRequest->notificationEmail);
-        $this->assertEquals('low', $this->paymentRequest->confirmationSpeed);
+        $this->assertEquals(100, $paymentRequest->total);
+        $this->assertEquals('ABC', $paymentRequest->currency);
+        $this->assertEquals('test_id', $paymentRequest->customPaymentId);
+        $this->assertEquals('test_callback_data', $paymentRequest->callbackData);
+        $this->assertEquals('Test Name', $paymentRequest->customerName);
+        $this->assertEquals('customer@email.com', $paymentRequest->customerEmail);
+        $this->assertEquals('https://www.example.com/success', $paymentRequest->successUrl);
+        $this->assertEquals('https://www.example.com/cancel', $paymentRequest->cancelUrl);
+        $this->assertEquals('https://www.example.com/ipn', $paymentRequest->ipnUrl);
+        $this->assertEquals('notification@email.com', $paymentRequest->notificationEmail);
+        $this->assertEquals('low', $paymentRequest->confirmationSpeed);
     }
 
     public function test_can_set_valid_data_on_model_using_properties()
     {
-        $this->paymentRequest->total = 98765.4321;
-        $this->paymentRequest->currency = 'DEF';
-        $this->paymentRequest->customPaymentId = 'custom_payment_id';
-        $this->paymentRequest->callbackData = 'test callback data';
-        $this->paymentRequest->customerName = 'Test Name';
-        $this->paymentRequest->customerEmail = 'customer@email.com';
-        $this->paymentRequest->successUrl = 'https://www.example.com/success';
-        $this->paymentRequest->cancelUrl = 'https://www.example.com/cancel';
-        $this->paymentRequest->ipnUrl = 'https://www.example.com/ipn';
-        $this->paymentRequest->notificationEmail = 'notification@email.com';
-        $this->paymentRequest->confirmationSpeed = 'high';
+        $paymentRequest = (new PaymentRequest('customer@email.com', 98765.4321, 'DEF', 'Test Name'))
+            ->withCustomPaymentId('custom_payment_id')
+            ->withCallbackData('test callback data')
+            ->withSuccessUrl('https://www.example.com/success')
+            ->withCancelUrl('https://www.example.com/cancel')
+            ->withIpnUrl('https://www.example.com/ipn')
+            ->withNotificationEmail('notification@email.com')
+            ->quickConfirmation();
 
-        $this->assertEquals(98765.4321, $this->paymentRequest->total);
-        $this->assertEquals('DEF', $this->paymentRequest->currency);
-        $this->assertEquals('custom_payment_id', $this->paymentRequest->customPaymentId);
-        $this->assertEquals('test callback data', $this->paymentRequest->callbackData);
-        $this->assertEquals('Test Name', $this->paymentRequest->customerName);
-        $this->assertEquals('customer@email.com', $this->paymentRequest->customerEmail);
-        $this->assertEquals('https://www.example.com/success', $this->paymentRequest->successUrl);
-        $this->assertEquals('https://www.example.com/cancel', $this->paymentRequest->cancelUrl);
-        $this->assertEquals('https://www.example.com/ipn', $this->paymentRequest->ipnUrl);
-        $this->assertEquals('notification@email.com', $this->paymentRequest->notificationEmail);
-        $this->assertEquals('high', $this->paymentRequest->confirmationSpeed);
+        $this->assertEquals(98765.4321, $paymentRequest->total);
+        $this->assertEquals('DEF', $paymentRequest->currency);
+        $this->assertEquals('custom_payment_id', $paymentRequest->customPaymentId);
+        $this->assertEquals('test callback data', $paymentRequest->callbackData);
+        $this->assertEquals('Test Name', $paymentRequest->customerName);
+        $this->assertEquals('customer@email.com', $paymentRequest->customerEmail);
+        $this->assertEquals('https://www.example.com/success', $paymentRequest->successUrl);
+        $this->assertEquals('https://www.example.com/cancel', $paymentRequest->cancelUrl);
+        $this->assertEquals('https://www.example.com/ipn', $paymentRequest->ipnUrl);
+        $this->assertEquals('notification@email.com', $paymentRequest->notificationEmail);
+        $this->assertEquals('high', $paymentRequest->confirmationSpeed);
     }
 
     public function test_sensible_defaults()
     {
-        $this->assertSame(0.0, $this->paymentRequest->total);
-        $this->assertSame('USD', $this->paymentRequest->currency);
-        $this->assertSame('medium', $this->paymentRequest->confirmationSpeed);
-        $this->assertNull($this->paymentRequest->customPaymentId);
-        $this->assertNull($this->paymentRequest->callbackData);
-        $this->assertNull($this->paymentRequest->customerName);
-        $this->assertNull($this->paymentRequest->customerEmail);
-        $this->assertNull($this->paymentRequest->successUrl);
-        $this->assertNull($this->paymentRequest->cancelUrl);
-        $this->assertNull($this->paymentRequest->ipnUrl);
-        $this->assertNull($this->paymentRequest->notificationEmail);
-    }
-
-    public function test_nullable_fields_should_not_throw_an_exception()
-    {
-        $this->paymentRequest->customPaymentId = null;
-        $this->paymentRequest->callbackData = null;
-        $this->paymentRequest->customerName = null;
-        $this->paymentRequest->successUrl = null;
-        $this->paymentRequest->cancelUrl = null;
-        $this->paymentRequest->ipnUrl = null;
-        $this->paymentRequest->notificationEmail = null;
-
-        $this->assertNull($this->paymentRequest->customPaymentId);
-        $this->assertNull($this->paymentRequest->callbackData);
-        $this->assertNull($this->paymentRequest->customerName);
-        $this->assertNull($this->paymentRequest->successUrl);
-        $this->assertNull($this->paymentRequest->cancelUrl);
-        $this->assertNull($this->paymentRequest->ipnUrl);
-        $this->assertNull($this->paymentRequest->notificationEmail);
+        $paymentRequest = new PaymentRequest('client@example.com', 1);
+        $this->assertSame('USD', $paymentRequest->currency);
+        $this->assertSame('medium', $paymentRequest->confirmationSpeed);
+        $this->assertNull($paymentRequest->customPaymentId);
+        $this->assertNull($paymentRequest->callbackData);
+        $this->assertNull($paymentRequest->customerName);
+        $this->assertNull($paymentRequest->successUrl);
+        $this->assertNull($paymentRequest->cancelUrl);
+        $this->assertNull($paymentRequest->ipnUrl);
+        $this->assertNull($paymentRequest->notificationEmail);
     }
 
     public function test_should_throw_exception_if_total_is_not_more_than_zero()
     {
         try {
-            $this->paymentRequest->total = 0;
+            new PaymentRequest('client@example.com', 0);
 
             $this->fail('Expected BelowMinimumException to be thrown');
         } catch (BelowMinimumException $e) {
@@ -171,7 +113,7 @@ class PaymentRequestTest extends TestCase
     public function test_should_throw_exception_if_total_is_not_a_number()
     {
         try {
-            $this->paymentRequest->total = '';
+            new PaymentRequest('client@example.com', '');
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -183,15 +125,15 @@ class PaymentRequestTest extends TestCase
 
     public function test_currency_should_always_be_uppercase()
     {
-        $this->paymentRequest->currency = 'abc';
+        $paymentRequest = new PaymentRequest('client@example.com', 1, 'abc');
 
-        $this->assertSame('ABC', $this->paymentRequest->currency);
+        $this->assertSame('ABC', $paymentRequest->currency);
     }
 
     public function test_currency_should_throw_exception_if_not_a_string()
     {
         try {
-            $this->paymentRequest->currency = [];
+            $paymentRequest = new PaymentRequest('client@example.com', 1, []);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -204,7 +146,7 @@ class PaymentRequestTest extends TestCase
     public function test_currency_should_throw_exception_if_not_a_3_character_string()
     {
         try {
-            $this->paymentRequest->currency = '';
+            $paymentRequest = new PaymentRequest('client@example.com', 1, '');
 
             $this->fail('Expected ValidationException to be thrown');
         } catch (ValidationException $e) {
@@ -217,7 +159,7 @@ class PaymentRequestTest extends TestCase
     public function test_customer_email_should_be_a_valid_email()
     {
         try {
-            $this->paymentRequest->customerEmail = [];
+            new PaymentRequest([], 1, 'ABC');
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -227,7 +169,7 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            $this->paymentRequest->customerEmail = 'invalid_email';
+            new PaymentRequest('invalid_email', 1, 'ABC');
 
             $this->fail('Expected InvalidEmailException to be thrown');
         } catch (InvalidEmailException $e) {
@@ -240,7 +182,8 @@ class PaymentRequestTest extends TestCase
     public function test_notification_email_should_be_a_valid_email()
     {
         try {
-            $this->paymentRequest->notificationEmail = [];
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withNotificationEmail([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -250,7 +193,8 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            $this->paymentRequest->notificationEmail = 'invalid_email';
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withNotificationEmail('invalid_email');
 
             $this->fail('Expected InvalidEmailException to be thrown');
         } catch (InvalidEmailException $e) {
@@ -263,7 +207,8 @@ class PaymentRequestTest extends TestCase
     public function test_success_url_should_be_a_valid_url()
     {
         try {
-            $this->paymentRequest->successUrl = [];
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withSuccessUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -273,7 +218,8 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            $this->paymentRequest->successUrl = 'invalid_url';
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withSuccessUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
         } catch (InvalidUrlException $e) {
@@ -286,7 +232,8 @@ class PaymentRequestTest extends TestCase
     public function test_cancel_url_should_be_a_valid_url()
     {
         try {
-            $this->paymentRequest->cancelUrl = [];
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withCancelUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -296,7 +243,8 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            $this->paymentRequest->cancelUrl = 'invalid_url';
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withCancelUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
         } catch (InvalidUrlException $e) {
@@ -309,7 +257,8 @@ class PaymentRequestTest extends TestCase
     public function test_ipn_url_should_be_a_valid_url()
     {
         try {
-            $this->paymentRequest->ipnUrl = [];
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withIpnUrl([]);
 
             $this->fail('Expected InvalidArgumentException to be thrown');
         } catch (InvalidArgumentException $e) {
@@ -319,7 +268,8 @@ class PaymentRequestTest extends TestCase
         }
 
         try {
-            $this->paymentRequest->ipnUrl = 'invalid_url';
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->withIpnUrl('invalid_url');
 
             $this->fail('Expected InvalidUrlException to be thrown');
         } catch (InvalidUrlException $e) {
@@ -332,7 +282,8 @@ class PaymentRequestTest extends TestCase
     public function test_should_throw_exception_for_invalid_confirmation_speed()
     {
         try {
-            $this->paymentRequest->confirmationSpeed = 'invalid_speed';
+            (new PaymentRequest('client@example.com', 1, 'ABC'))
+                ->confirmationSpeed('invalid_speed');
 
             $this->fail('Expected InvalidSelectionException to be thrown');
         } catch (InvalidSelectionException $e) {
@@ -341,28 +292,6 @@ class PaymentRequestTest extends TestCase
             $this->assertSame('The selected confirmation_speed is invalid.', $e->getMessage());
             $this->assertSame(['low', 'medium', 'high'], $e->getValidOptions());
         }
-    }
-
-    public function test_validate_should_pass_for_minimum_required_fields()
-    {
-        $this->paymentRequest->total = 10;
-        $this->paymentRequest->customerEmail = 'customer@email.com';
-
-        $this->assertTrue($this->paymentRequest->isValid());
-    }
-
-    public function test_validate_should_fail_if_total_is_not_set()
-    {
-        $this->paymentRequest->customerEmail = 'customer@email.com';
-
-        $this->assertFalse($this->paymentRequest->isValid());
-    }
-
-    public function test_validate_should_fail_if_customer_email_is_not_set()
-    {
-        $this->paymentRequest->total = 10;
-
-        $this->assertFalse($this->paymentRequest->isValid());
     }
 
     public function test_can_create_from_response()
@@ -399,11 +328,12 @@ class PaymentRequestTest extends TestCase
 
     public function test_callback_data_should_be_stored_as_json()
     {
-        $this->paymentRequest->callbackData = ['key' => 'value'];
+        $paymentRequest = (new PaymentRequest('client@example.com', 1, 'ABC'))
+            ->withCallbackData(['key' => 'value']);
 
-        $this->assertSame(['key' => 'value'], $this->paymentRequest->callbackData);
+        $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
 
-        $array = $this->paymentRequest->toArray();
+        $array = $paymentRequest->toArray();
         $this->assertSame('{"key":"value"}', $array['callback_data']);
     }
 
@@ -414,17 +344,5 @@ class PaymentRequestTest extends TestCase
         $paymentRequest = PaymentRequest::fromResponse($data);
 
         $this->assertSame(['key' => 'value'], $paymentRequest->callbackData);
-    }
-
-    public function test_exists_return_false_on_new_payment_request()
-    {
-        $this->assertFalse($this->paymentRequest->exists());
-    }
-
-    public function test_exists_return_true_for_payment_request_from_response()
-    {
-        $paymentRequest = PaymentRequest::fromResponse($this->getValidPaymentRequestResponse()['data']);
-
-        $this->assertTrue($paymentRequest->exists());
     }
 }

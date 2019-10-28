@@ -4,11 +4,14 @@ namespace GloBee\PaymentApi\Models;
 
 class Account extends Model
 {
+    protected $name;
+    protected $url;
 
-    protected $readonlyProperties = [
-        'name' => null,
-        'url' => null,
-    ];
+    public function __construct($name, $url)
+    {
+        $this->name = $name;
+        $this->url = $url;
+    }
 
     /**
      * @param array $data
@@ -17,11 +20,6 @@ class Account extends Model
      */
     public static function fromResponse(array $data)
     {
-        $self = new self();
-
-        $self->properties['name'] = $data['name'];
-        $self->properties['url'] = $data['url'];
-
-        return $self;
+        return new self($data['name'], $data['url']);
     }
 }

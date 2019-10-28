@@ -58,9 +58,7 @@ class PaymentApiTest extends TestCase
             ->andReturn($this->getValidPaymentRequestResponse())
             ->once();
 
-        $paymentRequest = new PaymentRequest();
-        $paymentRequest->total = 123.45;
-        $paymentRequest->customerEmail = 'john.smit@hotmail.com';
+        $paymentRequest = new PaymentRequest('john.smit@hotmail.com', 123.45);
 
         $response = $this->paymentApi->createPaymentRequest($paymentRequest);
 

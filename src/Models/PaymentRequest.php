@@ -2,49 +2,33 @@
 
 namespace GloBee\PaymentApi\Models;
 
-/**
- * @property string $id
- * @property string $status
- * @property float $total
- * @property string $currency
- * @property string $customPaymentId
- * @property mixed $callbackData
- * @property string $customerName
- * @property string $customerEmail
- * @property string $redirectUrl
- * @property string $successUrl
- * @property string $cancelUrl
- * @property string $ipnUrl
- * @property string $notificationEmail
- * @property string $confirmationSpeed
- * @property string $expiresAt
- * @property string $createdAt
- */
+use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
+
 class PaymentRequest extends Model
 {
-    use ValidationTrait;
+    protected $total;
+    protected $currency;
+    protected $customPaymentId;
+    protected $callbackData;
+    protected $customerName;
+    protected $customerEmail;
+    protected $successUrl;
+    protected $cancelUrl;
+    protected $ipnUrl;
+    protected $notificationEmail;
+    protected $confirmationSpeed = 'medium';
+    protected $id;
+    protected $status;
+    protected $redirectUrl;
+    protected $expiresAt;
+    protected $createdAt;
 
-    protected $properties = [
-        'total' => 0.0,
-        'currency' => 'USD',
-        'customPaymentId' => null,
-        'callbackData' => null,
-        'customerName' => null,
-        'customerEmail' => null,
-        'successUrl' => null,
-        'cancelUrl' => null,
-        'ipnUrl' => null,
-        'notificationEmail' => null,
-        'confirmationSpeed' => 'medium',
-    ];
-
-    protected $readonlyProperties = [
-        'id' => null,
-        'status' => null,
-        'redirectUrl' => null,
-        'expiresAt' => null,
-        'createdAt' => null,
-    ];
+    public function __construct($customerEmail, $total, $currency = 'USD', $customerName = null)
+    {
+        $this->setTotal($total);
+        $this->setCurrency($currency);
+        $this->setCustomer($customerEmail, $customerName);
+    }
 
     /**
      * @param array $data
@@ -53,28 +37,26 @@ class PaymentRequest extends Model
      */
     public static function fromResponse(array $data)
     {
-        $self = new self();
+        $self = new self($data['customer']['email'], $data['total']);
 
         $callbackData = json_decode($data['callback_data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $callbackData = $data['callback_data'];
         }
-        $self->readonlyProperties['id'] = $data['id'];
-        $self->readonlyProperties['status'] = $data['status'];
-        $self->properties['total'] = $data['total'];
-        $self->properties['currency'] = $data['currency'];
-        $self->properties['customPaymentId'] = $data['custom_payment_id'];
-        $self->properties['callbackData'] = $callbackData;
-        $self->properties['customerName'] = $data['customer']['name'];
-        $self->properties['customerEmail'] = $data['customer']['email'];
-        $self->readonlyProperties['redirectUrl'] = $data['redirect_url'];
-        $self->properties['successUrl'] = $data['success_url'];
-        $self->properties['cancelUrl'] = $data['cancel_url'];
-        $self->properties['ipnUrl'] = $data['ipn_url'];
-        $self->properties['notificationEmail'] = $data['notification_email'];
-        $self->properties['confirmationSpeed'] = $data['confirmation_speed'];
-        $self->readonlyProperties['expiresAt'] = $data['expires_at'];
-        $self->readonlyProperties['createdAt'] = $data['created_at'];
+        $self->id = $data['id'];
+        $self->status = $data['status'];
+        $self->currency = $data['currency'];
+        $self->customPaymentId = $data['custom_payment_id'];
+        $self->callbackData = $callbackData;
+        $self->customerName = $data['customer']['name'];
+        $self->redirectUrl = $data['redirect_url'];
+        $self->successUrl = $data['success_url'];
+        $self->cancelUrl = $data['cancel_url'];
+        $self->ipnUrl = $data['ipn_url'];
+        $self->notificationEmail = $data['notification_email'];
+        $self->confirmationSpeed = $data['confirmation_speed'];
+        $self->expiresAt = $data['expires_at'];
+        $self->createdAt = $data['created_at'];
 
         return $self;
     }
@@ -87,90 +69,174 @@ class PaymentRequest extends Model
      */
     protected function setTotal($total)
     {
-        $this->validateNumberAboveMinimum('total', $total, 0);
-        $this->properties['total'] = $total;
+        Validator::validateNumberAboveMinimum('total', $total, 0);
+        $this->total = $total;
     }
 
     /**
-     * @param mixed $currency
+     * @param string $currency
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      */
     protected function setCurrency($currency)
     {
-        $this->validateStringLength('currency', $currency, 3);
-        $this->properties['currency'] = strtoupper($currency);
+        Validator::validateStringLength('currency', $currency, 3);
+        $this->currency = strtoupper($currency);
     }
 
     /**
-     * @param mixed $customerEmail
+     * @param string $customerEmail
+     * @param string|null $customerName
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
      */
-    protected function setCustomerEmail($customerEmail)
+    protected function setCustomer($customerEmail, $customerName = null)
     {
-        $this->validateEmail('customer.email', $customerEmail);
-        $this->properties['customerEmail'] = $customerEmail;
+        Validator::validateEmail('customer.email', $customerEmail);
+        $this->customerEmail = $customerEmail;
+        $this->customerName = $customerName;
     }
 
     /**
-     * @param mixed $successUrl
+     * @param string $successUrl
      *
+     * @return self
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException
      */
-    protected function setSuccessUrl($successUrl)
+    public function withSuccessUrl($successUrl)
     {
         if ($successUrl !== null) {
-            $this->validateUrl('success_url', $successUrl);
+            Validator::validateUrl('success_url', $successUrl);
         }
-        $this->properties['successUrl'] = $successUrl;
+        $self = clone $this;
+        $self->successUrl = $successUrl;
+
+        return $self;
     }
 
     /**
-     * @param mixed $cancelUrl
+     * @param string $cancelUrl
+     *
+     * @return self
      */
-    protected function setCancelUrl($cancelUrl)
+    public function withCancelUrl($cancelUrl)
     {
         if ($cancelUrl !== null) {
-            $this->validateUrl('cancel_url', $cancelUrl);
+            Validator::validateUrl('cancel_url', $cancelUrl);
         }
-        $this->properties['cancelUrl'] = $cancelUrl;
+        $self = clone $this;
+        $self->cancelUrl = $cancelUrl;
+
+        return $self;
+    }
+
+    public function withCallbackData($callbackData)
+    {
+        $callbackDataString = $callbackData;
+
+        if (!is_string($callbackData)) {
+            $callbackDataString = json_encode($callbackData);
+        }
+
+        if (strlen($callbackDataString) > 150) {
+            throw new ValidationException([], 'Callback Data must be less than 150 characters long.');
+        }
+
+        $self = clone $this;
+        $self->callbackData = $callbackData;
+
+        return $self;
     }
 
     /**
-     * @param mixed $ipnUrl
+     * @param $ipnUrl
+     *
+     * @return self
      */
-    protected function setIpnUrl($ipnUrl)
+    public function withIpnUrl($ipnUrl)
     {
         if ($ipnUrl !== null) {
-            $this->validateUrl('ipn_url', $ipnUrl);
+            Validator::validateUrl('ipn_url', $ipnUrl);
         }
-        $this->properties['ipnUrl'] = $ipnUrl;
+        $self = clone $this;
+        $self->ipnUrl = $ipnUrl;
+
+        return $self;
     }
 
     /**
-     * @param mixed $notificationEmail
+     * @param string $customPaymentId
+     *
+     * @return self
      */
-    protected function setNotificationEmail($notificationEmail)
+    public function withCustomPaymentId($customPaymentId)
+    {
+        $self = clone $this;
+        $self->customPaymentId = $customPaymentId;
+
+        return $self;
+    }
+
+    /**
+     * @param string $notificationEmail
+     *
+     * @return self
+     */
+    public function withNotificationEmail($notificationEmail)
     {
         if ($notificationEmail !== null) {
-            $this->validateEmail('notification_email', $notificationEmail);
+            Validator::validateEmail('notification_email', $notificationEmail);
         }
-        $this->properties['notificationEmail'] = $notificationEmail;
+        $self = clone $this;
+        $self->notificationEmail = $notificationEmail;
+
+        return $self;
     }
 
     /**
-     * @param mixed $confirmationSpeed
-     *
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidSelectionException
+     * @return self
      */
-    protected function setConfirmationSpeed($confirmationSpeed)
+    public function lowRiskConfirmation()
     {
-        $this->validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
-        $this->properties['confirmationSpeed'] = $confirmationSpeed;
+        $self = clone $this;
+        $self->confirmationSpeed = 'low';
+
+        return $self;
+    }
+
+    /**
+     * @return self
+     */
+    public function balancedConfirmation()
+    {
+        $self = clone $this;
+        $self->confirmationSpeed = 'medium';
+
+        return $self;
+    }
+
+    /**
+     * @return self
+     */
+    public function quickConfirmation()
+    {
+        $self = clone $this;
+        $self->confirmationSpeed = 'high';
+
+        return $self;
+    }
+
+    public function confirmationSpeed($confirmationSpeed)
+    {
+        Validator::validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
+
+        $self = clone $this;
+        $self->confirmationSpeed = $confirmationSpeed;
+
+        return $self;
     }
 
     /**
@@ -203,21 +269,5 @@ class PaymentRequest extends Model
             'expires_at' => $this->expiresAt,
             'created_at' => $this->createdAt,
         ];
-    }
-
-    /**
-     * @return bool
-     */
-    public function isValid()
-    {
-        return $this->total > 0 && null !== $this->customerEmail;
-    }
-
-    /**
-     * @return bool
-     */
-    public function exists()
-    {
-        return $this->id !== null;
     }
 }

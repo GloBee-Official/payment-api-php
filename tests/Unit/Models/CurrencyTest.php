@@ -8,16 +8,6 @@ use Tests\TestCase;
 
 class CurrencyTest extends TestCase
 {
-    /**
-     * @var Account
-     */
-    private $account;
-
-    public function setUp()
-    {
-        $this->account = new Currency();
-    }
-
     public function test_can_create_from_response()
     {
         $currencies = Currency::fromResponse([
