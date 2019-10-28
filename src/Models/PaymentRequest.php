@@ -7,7 +7,7 @@ use GloBee\PaymentApi\Exceptions\Validation\ValidationException;
 class PaymentRequest extends Model
 {
     protected $total;
-    protected $currency = 'USD';
+    protected $currency;
     protected $customPaymentId;
     protected $callbackData;
     protected $customerName;
@@ -23,28 +23,11 @@ class PaymentRequest extends Model
     protected $expiresAt;
     protected $createdAt;
 
-    public function __construct($total, $customerEmail)
+    public function __construct($customerEmail, $total, $currency = 'USD', $customerName = null)
     {
         $this->setTotal($total);
-        $this->setCustomerEmail($customerEmail);
-    }
-
-    /**
-     * @param        $total
-     * @param string $currency
-     * @param string $customerEmail
-     * @param string $clientName
-     *
-     * @return self
-     */
-    public static function create($total, $currency, $customerEmail, $clientName = '')
-    {
-        $paymentRequest = new self($total, $customerEmail);
-
-        $paymentRequest->setCurrency($currency);
-        $paymentRequest->customerName = $clientName;
-
-        return $paymentRequest;
+        $this->setCurrency($currency);
+        $this->setCustomer($customerEmail, $customerName);
     }
 
     /**
@@ -54,7 +37,7 @@ class PaymentRequest extends Model
      */
     public static function fromResponse(array $data)
     {
-        $self = new self($data['total'], $data['customer']['email']);
+        $self = new self($data['customer']['email'], $data['total']);
 
         $callbackData = json_decode($data['callback_data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -104,14 +87,16 @@ class PaymentRequest extends Model
 
     /**
      * @param mixed $customerEmail
+     * @param string|null $customerName
      *
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
      * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
      */
-    protected function setCustomerEmail($customerEmail)
+    protected function setCustomer($customerEmail, $customerName = null)
     {
         Validator::validateEmail('customer.email', $customerEmail);
         $this->customerEmail = $customerEmail;
+        $this->customerName = $customerName;
     }
 
     /**
