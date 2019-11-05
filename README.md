@@ -7,6 +7,9 @@
 This is a library to integrate your system with the GloBee Payment API
 to manage and accept crypto payments through our system.
 
+####Note:
+If using PHP 7.0 or below, use version 0.4.0 or lower.
+
 ## Installation with Composer
 Run the following command in your project to add this package:
 ```bash
