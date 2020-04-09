@@ -34,12 +34,16 @@ class PaymentRequest extends Model
     {
         Validator::validateNumberAboveMinimum('total', $total, 0);
         $this->total = $total;
+
+        return $this;
     }
 
     protected function setCurrency($currency)
     {
         Validator::validateStringLength('currency', $currency, 3);
         $this->currency = strtoupper($currency);
+
+        return $this;
     }
 
     protected function setCustomer($customerEmail, $customerName = null)
@@ -47,6 +51,8 @@ class PaymentRequest extends Model
         Validator::validateEmail('customer.email', $customerEmail);
         $this->customerEmail = $customerEmail;
         $this->customerName = $customerName;
+
+        return $this;
     }
 
     public function setSuccessUrl($successUrl)
@@ -55,6 +61,8 @@ class PaymentRequest extends Model
             Validator::validateUrl('success_url', $successUrl);
         }
         $this->successUrl = $successUrl;
+
+        return $this;
     }
 
     public function setCancelUrl($cancelUrl)
@@ -63,6 +71,8 @@ class PaymentRequest extends Model
             Validator::validateUrl('cancel_url', $cancelUrl);
         }
         $this->cancelUrl = $cancelUrl;
+
+        return $this;
     }
 
     public function setCallbackData($callbackData)
@@ -75,6 +85,8 @@ class PaymentRequest extends Model
             throw new ValidationException([], 'Callback Data must be less than 150 characters long.');
         }
         $this->callbackData = $callbackData;
+
+        return $this;
     }
 
     public function setIpnUrl($ipnUrl)
@@ -83,11 +95,15 @@ class PaymentRequest extends Model
             Validator::validateUrl('ipn_url', $ipnUrl);
         }
         $this->ipnUrl = $ipnUrl;
+
+        return $this;
     }
 
     public function setCustomPaymentId($customPaymentId)
     {
         $this->customPaymentId = $customPaymentId;
+
+        return $this;
     }
 
     public function setNotificationEmail($notificationEmail)
@@ -96,27 +112,37 @@ class PaymentRequest extends Model
             Validator::validateEmail('notification_email', $notificationEmail);
         }
         $this->notificationEmail = $notificationEmail;
+
+        return $this;
     }
 
     public function setLowRiskConfirmation()
     {
         $this->confirmationSpeed = 'low';
+
+        return $this;
     }
 
     public function setBalancedConfirmation()
     {
         $this->confirmationSpeed = 'medium';
+
+        return $this;
     }
 
     public function setQuickConfirmation()
     {
         $this->confirmationSpeed = 'high';
+
+        return $this;
     }
 
     public function setConfirmationSpeed($confirmationSpeed)
     {
         Validator::validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
         $this->confirmationSpeed = $confirmationSpeed;
+
+        return $this;
     }
 
     public static function fromResponse(array $data)
@@ -181,7 +207,7 @@ class PaymentRequest extends Model
      */
     public function withSuccessUrl($successUrl)
     {
-        $this->setSuccessUrl($successUrl);
+        return $this->setSuccessUrl($successUrl);
     }
 
     /**
@@ -189,7 +215,7 @@ class PaymentRequest extends Model
      */
     public function withCancelUrl($cancelUrl)
     {
-        $this->setCancelUrl($cancelUrl);
+        return $this->setCancelUrl($cancelUrl);
     }
 
     /**
@@ -197,7 +223,7 @@ class PaymentRequest extends Model
      */
     public function withCallbackData($callbackData)
     {
-        $this->setCallbackData($callbackData);
+        return $this->setCallbackData($callbackData);
     }
 
     /**
@@ -205,7 +231,7 @@ class PaymentRequest extends Model
      */
     public function withIpnUrl($ipnUrl)
     {
-        $this->setIpnUrl($ipnUrl);
+        return $this->setIpnUrl($ipnUrl);
     }
 
     /**
@@ -213,7 +239,7 @@ class PaymentRequest extends Model
      */
     public function withCustomPaymentId($customPaymentId)
     {
-        $this->setCustomPaymentId($customPaymentId);
+        return $this->setCustomPaymentId($customPaymentId);
     }
 
     /**
@@ -221,7 +247,7 @@ class PaymentRequest extends Model
      */
     public function withNotificationEmail($notificationEmail)
     {
-        $this->setNotificationEmail($notificationEmail);
+        return $this->setNotificationEmail($notificationEmail);
     }
 
     /**
@@ -229,7 +255,7 @@ class PaymentRequest extends Model
      */
     public function lowRiskConfirmation()
     {
-        $this->setLowRiskConfirmation();
+        return $this->setLowRiskConfirmation();
     }
 
     /**
@@ -237,7 +263,7 @@ class PaymentRequest extends Model
      */
     public function balancedConfirmation()
     {
-        $this->setBalancedConfirmation();
+        return $this->setBalancedConfirmation();
     }
 
     /**
@@ -245,7 +271,7 @@ class PaymentRequest extends Model
      */
     public function quickConfirmation()
     {
-        $this->setQuickConfirmation();
+        return $this->setQuickConfirmation();
     }
 
     /**
@@ -253,6 +279,6 @@ class PaymentRequest extends Model
      */
     public function confirmationSpeed($confirmationSpeed)
     {
-        $this->confirmationSpeed($confirmationSpeed);
+        return $this->setConfirmationSpeed($confirmationSpeed);
     }
 }
