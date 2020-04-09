@@ -15,7 +15,7 @@ class CurlConnectionExceptionTest extends TestCase
      */
     protected $curlWrapper;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->curlWrapper = \Mockery::mock(CurlWrapper::class);
