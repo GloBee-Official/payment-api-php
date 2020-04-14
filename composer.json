@@ -14,8 +14,7 @@
         "monero",
         "litecoin",
         "dogecoin",
-        "decred",
-        "bitcoin cash"
+        "decred"
     ],
     "license": "GPL-3.0-or-later",
     "authors": [
