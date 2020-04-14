@@ -30,11 +30,121 @@ class PaymentRequest extends Model
         $this->setCustomer($customerEmail, $customerName);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return PaymentRequest
-     */
+    protected function setTotal($total)
+    {
+        Validator::validateNumberAboveMinimum('total', $total, 0);
+        $this->total = $total;
+
+        return $this;
+    }
+
+    protected function setCurrency($currency)
+    {
+        Validator::validateStringLength('currency', $currency, 3);
+        $this->currency = strtoupper($currency);
+
+        return $this;
+    }
+
+    protected function setCustomer($customerEmail, $customerName = null)
+    {
+        Validator::validateEmail('customer.email', $customerEmail);
+        $this->customerEmail = $customerEmail;
+        $this->customerName = $customerName;
+
+        return $this;
+    }
+
+    public function setSuccessUrl($successUrl)
+    {
+        if ($successUrl !== null) {
+            Validator::validateUrl('success_url', $successUrl);
+        }
+        $this->successUrl = $successUrl;
+
+        return $this;
+    }
+
+    public function setCancelUrl($cancelUrl)
+    {
+        if ($cancelUrl !== null) {
+            Validator::validateUrl('cancel_url', $cancelUrl);
+        }
+        $this->cancelUrl = $cancelUrl;
+
+        return $this;
+    }
+
+    public function setCallbackData($callbackData)
+    {
+        $callbackDataString = $callbackData;
+        if (!is_string($callbackData)) {
+            $callbackDataString = json_encode($callbackData);
+        }
+        if (strlen($callbackDataString) > 150) {
+            throw new ValidationException([], 'Callback Data must be less than 150 characters long.');
+        }
+        $this->callbackData = $callbackData;
+
+        return $this;
+    }
+
+    public function setIpnUrl($ipnUrl)
+    {
+        if ($ipnUrl !== null) {
+            Validator::validateUrl('ipn_url', $ipnUrl);
+        }
+        $this->ipnUrl = $ipnUrl;
+
+        return $this;
+    }
+
+    public function setCustomPaymentId($customPaymentId)
+    {
+        $this->customPaymentId = $customPaymentId;
+
+        return $this;
+    }
+
+    public function setNotificationEmail($notificationEmail)
+    {
+        if ($notificationEmail !== null) {
+            Validator::validateEmail('notification_email', $notificationEmail);
+        }
+        $this->notificationEmail = $notificationEmail;
+
+        return $this;
+    }
+
+    public function setLowRiskConfirmation()
+    {
+        $this->confirmationSpeed = 'low';
+
+        return $this;
+    }
+
+    public function setBalancedConfirmation()
+    {
+        $this->confirmationSpeed = 'medium';
+
+        return $this;
+    }
+
+    public function setQuickConfirmation()
+    {
+        $this->confirmationSpeed = 'high';
+
+        return $this;
+    }
+
+    public function setConfirmationSpeed($confirmationSpeed)
+    {
+        Validator::validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
+        $this->confirmationSpeed = $confirmationSpeed;
+
+        return $this;
+    }
+
     public static function fromResponse(array $data)
     {
         $self = new self($data['customer']['email'], $data['total']);
@@ -61,187 +171,6 @@ class PaymentRequest extends Model
         return $self;
     }
 
-    /**
-     * @param float $total
-     *
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\BelowMinimumException
-     */
-    protected function setTotal($total)
-    {
-        Validator::validateNumberAboveMinimum('total', $total, 0);
-        $this->total = $total;
-    }
-
-    /**
-     * @param string $currency
-     *
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\ValidationException
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
-     */
-    protected function setCurrency($currency)
-    {
-        Validator::validateStringLength('currency', $currency, 3);
-        $this->currency = strtoupper($currency);
-    }
-
-    /**
-     * @param string $customerEmail
-     * @param string|null $customerName
-     *
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidEmailException
-     */
-    protected function setCustomer($customerEmail, $customerName = null)
-    {
-        Validator::validateEmail('customer.email', $customerEmail);
-        $this->customerEmail = $customerEmail;
-        $this->customerName = $customerName;
-    }
-
-    /**
-     * @param string $successUrl
-     *
-     * @return self
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidArgumentException
-     * @throws \GloBee\PaymentApi\Exceptions\Validation\InvalidUrlException
-     */
-    public function withSuccessUrl($successUrl)
-    {
-        if ($successUrl !== null) {
-            Validator::validateUrl('success_url', $successUrl);
-        }
-        $self = clone $this;
-        $self->successUrl = $successUrl;
-
-        return $self;
-    }
-
-    /**
-     * @param string $cancelUrl
-     *
-     * @return self
-     */
-    public function withCancelUrl($cancelUrl)
-    {
-        if ($cancelUrl !== null) {
-            Validator::validateUrl('cancel_url', $cancelUrl);
-        }
-        $self = clone $this;
-        $self->cancelUrl = $cancelUrl;
-
-        return $self;
-    }
-
-    public function withCallbackData($callbackData)
-    {
-        $callbackDataString = $callbackData;
-
-        if (!is_string($callbackData)) {
-            $callbackDataString = json_encode($callbackData);
-        }
-
-        if (strlen($callbackDataString) > 150) {
-            throw new ValidationException([], 'Callback Data must be less than 150 characters long.');
-        }
-
-        $self = clone $this;
-        $self->callbackData = $callbackData;
-
-        return $self;
-    }
-
-    /**
-     * @param $ipnUrl
-     *
-     * @return self
-     */
-    public function withIpnUrl($ipnUrl)
-    {
-        if ($ipnUrl !== null) {
-            Validator::validateUrl('ipn_url', $ipnUrl);
-        }
-        $self = clone $this;
-        $self->ipnUrl = $ipnUrl;
-
-        return $self;
-    }
-
-    /**
-     * @param string $customPaymentId
-     *
-     * @return self
-     */
-    public function withCustomPaymentId($customPaymentId)
-    {
-        $self = clone $this;
-        $self->customPaymentId = $customPaymentId;
-
-        return $self;
-    }
-
-    /**
-     * @param string $notificationEmail
-     *
-     * @return self
-     */
-    public function withNotificationEmail($notificationEmail)
-    {
-        if ($notificationEmail !== null) {
-            Validator::validateEmail('notification_email', $notificationEmail);
-        }
-        $self = clone $this;
-        $self->notificationEmail = $notificationEmail;
-
-        return $self;
-    }
-
-    /**
-     * @return self
-     */
-    public function lowRiskConfirmation()
-    {
-        $self = clone $this;
-        $self->confirmationSpeed = 'low';
-
-        return $self;
-    }
-
-    /**
-     * @return self
-     */
-    public function balancedConfirmation()
-    {
-        $self = clone $this;
-        $self->confirmationSpeed = 'medium';
-
-        return $self;
-    }
-
-    /**
-     * @return self
-     */
-    public function quickConfirmation()
-    {
-        $self = clone $this;
-        $self->confirmationSpeed = 'high';
-
-        return $self;
-    }
-
-    public function confirmationSpeed($confirmationSpeed)
-    {
-        Validator::validateOptions('confirmation_speed', $confirmationSpeed, ['low', 'medium', 'high']);
-
-        $self = clone $this;
-        $self->confirmationSpeed = $confirmationSpeed;
-
-        return $self;
-    }
-
-    /**
-     * @return array
-     */
     public function toArray()
     {
         $callbackData = $this->callbackData;
@@ -269,5 +198,87 @@ class PaymentRequest extends Model
             'expires_at' => $this->expiresAt,
             'created_at' => $this->createdAt,
         ];
+    }
+
+    // The below methods are deprecated ----------------------------------------------------------------------------- //
+
+    /**
+     * @deprecated
+     */
+    public function withSuccessUrl($successUrl)
+    {
+        return $this->setSuccessUrl($successUrl);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function withCancelUrl($cancelUrl)
+    {
+        return $this->setCancelUrl($cancelUrl);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function withCallbackData($callbackData)
+    {
+        return $this->setCallbackData($callbackData);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function withIpnUrl($ipnUrl)
+    {
+        return $this->setIpnUrl($ipnUrl);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function withCustomPaymentId($customPaymentId)
+    {
+        return $this->setCustomPaymentId($customPaymentId);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function withNotificationEmail($notificationEmail)
+    {
+        return $this->setNotificationEmail($notificationEmail);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function lowRiskConfirmation()
+    {
+        return $this->setLowRiskConfirmation();
+    }
+
+    /**
+     * @deprecated
+     */
+    public function balancedConfirmation()
+    {
+        return $this->setBalancedConfirmation();
+    }
+
+    /**
+     * @deprecated
+     */
+    public function quickConfirmation()
+    {
+        return $this->setQuickConfirmation();
+    }
+
+    /**
+     * @deprecated
+     */
+    public function confirmationSpeed($confirmationSpeed)
+    {
+        return $this->setConfirmationSpeed($confirmationSpeed);
     }
 }

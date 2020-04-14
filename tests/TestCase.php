@@ -4,7 +4,7 @@ namespace Tests;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    public function tearDown(): void
+    protected function tearDown()
     {
         parent::tearDown();
         \Mockery::close();
