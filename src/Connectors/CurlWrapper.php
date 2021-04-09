@@ -21,7 +21,7 @@ class CurlWrapper
      */
     protected function getClient()
     {
-        if (!is_resource($this->client)) {
+        if (!is_resource($this->client) && !is_object($this->client)) {
             $this->client = curl_init();
         }
 
